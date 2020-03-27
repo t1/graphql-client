@@ -1,17 +1,36 @@
 package com.github.t1.graphql.client;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
 public class NestedBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
+
+    interface StringSetApi {
+        Set<String> greetings();
+    }
+
+    @Test void shouldCallStringSetQuery() {
+        StringSetApi api = fixture.buildClient(StringSetApi.class);
+        fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+
+        Set<String> greetings = api.greetings();
+
+        then(fixture.query()).isEqualTo("greetings");
+        then(greetings).containsExactly("a", "b");
+    }
+
 
     interface StringListApi {
         List<String> greetings();
@@ -25,6 +44,118 @@ public class NestedBehavior {
 
         then(fixture.query()).isEqualTo("greetings");
         then(greetings).containsExactly("a", "b");
+    }
+
+
+    interface StringArrayApi {
+        String[] greetings();
+    }
+
+    @Test void shouldCallStringArrayQuery() {
+        StringArrayApi api = fixture.buildClient(StringArrayApi.class);
+        fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+
+        String[] greetings = api.greetings();
+
+        then(fixture.query()).isEqualTo("greetings");
+        then(greetings).containsExactly("a", "b");
+    }
+
+
+    interface OptionalStringApi {
+        Optional<String> greeting();
+    }
+
+    @Test void shouldCallEmptyOptionalStringQuery() {
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
+        fixture.returnsData("\"greeting\":[]");
+
+        Optional<String> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting");
+        then(greeting).isEmpty();
+    }
+
+    @Test void shouldCallOptionalStringQuery() {
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
+        fixture.returnsData("\"greeting\":[\"hi\"]");
+
+        Optional<String> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting");
+        then(greeting).contains("hi");
+    }
+
+    @Test void shouldFailToCallOptionalStringQueryWithTwoValues() {
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
+        fixture.returnsData("\"greeting\":[\"hi\",\"ho\"]");
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("greeting");
+        then(thrown).hasMessage("more than one value in optional: [\"hi\",\"ho\"]");
+    }
+
+
+    interface OptionalGreetingApi {
+        Optional<Greeting> greeting();
+    }
+
+    @Test void shouldCallOptionalGreetingQuery() {
+        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
+        fixture.returnsData("\"greeting\":[{\"text\":\"hi\",\"code\":5}]");
+
+        Optional<Greeting> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting {text code}");
+        then(greeting).contains(new Greeting("hi", 5));
+    }
+
+    @Test void shouldCallEmptyOptionalGreetingQuery() {
+        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
+        fixture.returnsData("\"greeting\":[]");
+
+        Optional<Greeting> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting {text code}");
+        then(greeting).isEmpty();
+    }
+
+
+    interface OptionalGreetingListApi {
+        Optional<List<Greeting>> greeting();
+    }
+
+    @Test void shouldCallOptionalGreetingListQuery() {
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
+        fixture.returnsData("\"greeting\":[[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]]");
+
+        Optional<List<Greeting>> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting {text code}");
+        assert greeting.isPresent();
+        then(greeting.get()).contains(new Greeting("hi", 5), new Greeting("ho", 7));
+    }
+
+    @Test void shouldCallEmptyOptionalGreetingListQuery() {
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
+        fixture.returnsData("\"greeting\":[]");
+
+        Optional<List<Greeting>> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting {text code}");
+        then(greeting).isEmpty();
+    }
+
+    @Test void shouldCallOptionalEmptyGreetingListQuery() {
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
+        fixture.returnsData("\"greeting\":[[]]");
+
+        Optional<List<Greeting>> greeting = api.greeting();
+
+        then(fixture.query()).isEqualTo("greeting {text code}");
+        assert greeting.isPresent();
+        then(greeting.get()).isEmpty();
     }
 
 
@@ -132,7 +263,6 @@ public class NestedBehavior {
             asList(new Greeting("a", 1), new Greeting("b", 2)), 3));
     }
 
-    // TODO Optionals, Arrays and more
 
     interface WrappedGreetingApi {
         WrappedGreetingContainer container();

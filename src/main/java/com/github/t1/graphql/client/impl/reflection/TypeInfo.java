@@ -10,6 +10,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.lang.reflect.Modifier.isStatic;
@@ -25,15 +27,21 @@ public class TypeInfo {
     @Override public String toString() { return type + ((container == null) ? "" : " in " + container); }
 
     public boolean isCollection() {
-        if (!(type instanceof ParameterizedType)) {
-            return false;
-        }
-        return Collection.class.isAssignableFrom(raw(type));
+        return ifClass(Class::isArray)
+            || isOptional() // MP GraphQL represents Optionals as Arrays with zero or one items
+            || Collection.class.isAssignableFrom(raw(type));
+    }
+
+    public boolean isOptional() {
+        return Optional.class.equals(raw(type));
     }
 
     public TypeInfo itemType() {
         assert isCollection();
-        return new TypeInfo(this, ((ParameterizedType) type).getActualTypeArguments()[0]);
+        Type itemType = (type instanceof ParameterizedType)
+            ? ((ParameterizedType) type).getActualTypeArguments()[0]
+            : ((Class<?>) type).getComponentType();
+        return new TypeInfo(this, itemType);
     }
 
     public Stream<FieldInfo> fields() {
@@ -65,12 +73,15 @@ public class TypeInfo {
         return raw(typeVariable.getBounds()[0]);
     }
 
-    public boolean isScalar() {
-        return SCALAR_TYPES.contains(type);
+
+    public boolean isEnum() { return ifClass(Class::isEnum); }
+
+    private boolean ifClass(Predicate<Class<?>> predicate) {
+        return (type instanceof Class) && predicate.test((Class<?>) type);
     }
 
-    public boolean isEnum() {
-        return (type instanceof Class) && ((Class<?>) type).isEnum();
+    public boolean isScalar() {
+        return SCALAR_TYPES.contains(type);
     }
 
     private static final List<Type> SCALAR_TYPES = asList(
@@ -81,4 +92,8 @@ public class TypeInfo {
     );
 
     public Type getNativeType() { return type; }
+
+    public Type[] getNativeTypeArguments() {
+        return ((ParameterizedType) type).getActualTypeArguments();
+    }
 }

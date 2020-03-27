@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -18,6 +19,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import java.io.StringReader;
+import java.lang.reflect.Type;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -106,6 +109,21 @@ class GraphQlClientImpl {
             throw new GraphQlClientException("GraphQL error: " + responseJson.getJsonArray("errors") + ":\n  " + request);
         JsonObject data = responseJson.getJsonObject("data");
         JsonValue value = data.get(method.getName());
+        if (method.getReturnType().isOptional() && value instanceof JsonArray)
+            return optionalFrom((JsonArray) value, method.getReturnType());
         return jsonb.fromJson(value.toString(), method.getReturnType().getNativeType());
+    }
+
+    private Object optionalFrom(JsonArray array, TypeInfo returnType) {
+        switch (array.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                JsonValue itemValue = array.get(0);
+                Type containedType = returnType.getNativeTypeArguments()[0];
+                return Optional.of(jsonb.fromJson(itemValue.toString(), containedType));
+            default:
+                throw new GraphQlClientException("more than one value in optional: " + array);
+        }
     }
 }
