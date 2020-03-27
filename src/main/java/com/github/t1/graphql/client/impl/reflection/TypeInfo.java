@@ -69,6 +69,10 @@ public class TypeInfo {
         return SCALAR_TYPES.contains(type);
     }
 
+    public boolean isEnum() {
+        return (type instanceof Class) && ((Class<?>) type).isEnum();
+    }
+
     private static final List<Type> SCALAR_TYPES = asList(
         Integer.class, int.class,
         Double.class, double.class, // = Float in GraphQL speech

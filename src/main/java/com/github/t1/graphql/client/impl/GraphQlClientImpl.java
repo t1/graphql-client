@@ -70,7 +70,7 @@ class GraphQlClientImpl {
     }
 
     private String fields(TypeInfo type) {
-        if (type.isScalar()) {
+        if (type.isScalar() || type.isEnum()) {
             return "";
         } else if (type.isCollection()) {
             return fields(type.itemType());
