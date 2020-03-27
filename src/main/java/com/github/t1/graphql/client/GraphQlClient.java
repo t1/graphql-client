@@ -1,9 +1,9 @@
 package com.github.t1.graphql.client;
 
-import com.github.t1.graphql.client.internal.FieldInfo;
-import com.github.t1.graphql.client.internal.MethodInfo;
-import com.github.t1.graphql.client.internal.ParameterInfo;
-import com.github.t1.graphql.client.internal.TypeInfo;
+import com.github.t1.graphql.client.reflection.FieldInfo;
+import com.github.t1.graphql.client.reflection.MethodInfo;
+import com.github.t1.graphql.client.reflection.ParameterInfo;
+import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

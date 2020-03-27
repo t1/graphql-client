@@ -1,6 +1,6 @@
 package com.github.t1.graphql.client;
 
-import com.github.t1.graphql.client.internal.MethodInfo;
+import com.github.t1.graphql.client.reflection.MethodInfo;
 import lombok.NoArgsConstructor;
 
 import javax.json.bind.Jsonb;

@@ -153,6 +153,36 @@ public class GraphQlClientTest {
             asList(new Greeting("a", 1), new Greeting("b", 2)), 3));
     }
 
+    // TODO Optionals, Arrays and more
+
+    interface WrappedGreetingApi {
+        WrappedGreetingContainer container();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class WrappedGreetingContainer {
+        Wrapper<Greeting> greeting;
+        int count;
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class Wrapper<T> {
+        private T value;
+    }
+
+    @Test void shouldCallWrappedGreetingQuery() {
+        WrappedGreetingApi api = fixture.buildClient(WrappedGreetingApi.class);
+        fixture.returnsData("\"container\":{\"greeting\":{" +
+            "\"value\":{\"text\":\"a\",\"code\":1}}," +
+            "\"count\":3}");
+
+        WrappedGreetingContainer container = api.container();
+
+        then(fixture.query()).isEqualTo("container {greeting{value{text code}} count}");
+        then(container).isEqualTo(new WrappedGreetingContainer(
+            new Wrapper<>(new Greeting("a", 1)), 3));
+    }
+
 
     interface ParamApi {
         String greeting(String who);
