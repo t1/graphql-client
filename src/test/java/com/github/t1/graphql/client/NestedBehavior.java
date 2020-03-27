@@ -1,39 +1,17 @@
 package com.github.t1.graphql.client;
 
-import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.microprofile.graphql.Query;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class GraphQlClientTest {
-
+public class NestedBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
-
-
-    interface StringApi {
-        String greeting();
-    }
-
-    @Test void shouldCallStringQuery() {
-        StringApi api = fixture.buildClient(StringApi.class);
-        fixture.returnsData("\"greeting\":\"dummy-greeting\"");
-
-        String greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).isEqualTo("dummy-greeting");
-    }
-
 
     interface StringListApi {
         List<String> greetings();
@@ -182,73 +160,5 @@ public class GraphQlClientTest {
         then(fixture.query()).isEqualTo("container {greeting{value{text code}} count}");
         then(container).isEqualTo(new WrappedGreetingContainer(
             new Wrapper<>(new Greeting("a", 1)), 3));
-    }
-
-
-    interface ParamApi {
-        String greeting(String who);
-    }
-
-    @Test void shouldCallParamQuery() {
-        ParamApi api = fixture.buildClient(ParamApi.class);
-        fixture.returnsData("\"greeting\":\"hi, foo\"");
-
-        String greeting = api.greeting("foo");
-
-        then(fixture.query()).isEqualTo("greeting(who: \\\"foo\\\")");
-        then(greeting).isEqualTo("hi, foo");
-    }
-
-
-    interface ParamsApi {
-        String greeting(String who, int count);
-    }
-
-    @Test void shouldCallTwoParamsQuery() {
-        ParamsApi api = fixture.buildClient(ParamsApi.class);
-        fixture.returnsData("\"greeting\":\"hi, foo 3\"");
-
-        String greeting = api.greeting("foo", 3);
-
-        then(fixture.query()).isEqualTo("greeting(who: \\\"foo\\\", count: 3)");
-        then(greeting).isEqualTo("hi, foo 3");
-    }
-
-
-    @Test void shouldFailStringQueryNotFound() {
-        StringApi api = fixture.buildClient(StringApi.class);
-        fixture.returns(Response.serverError().type(TEXT_PLAIN_TYPE).entity("failed").build());
-
-        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(thrown).hasMessage("expected successful status code but got 500 Internal Server Error:\n" +
-            "failed");
-    }
-
-    @Test void shouldFailOnQueryError() {
-        StringApi api = fixture.buildClient(StringApi.class);
-        fixture.returns(Response.ok("{\"errors\":[{\"message\":\"failed\"}]}").build());
-
-        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(thrown).hasMessage("GraphQL error: [{\"message\":\"failed\"}]:\n" +
-            "  {\"query\":\"{ greeting }\"}");
-    }
-
-
-    interface RenamedStringApi {
-        @Query("greeting") String foo();
-    }
-
-    @Test void shouldCallRenamedStringQuery() {
-        RenamedStringApi api = fixture.buildClient(RenamedStringApi.class);
-        fixture.returnsData("\"greeting\":\"dummy-greeting\"");
-
-        String greeting = api.foo();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).isEqualTo("dummy-greeting");
     }
 }

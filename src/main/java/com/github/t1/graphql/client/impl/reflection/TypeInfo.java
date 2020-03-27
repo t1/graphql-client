@@ -70,8 +70,10 @@ public class TypeInfo {
     }
 
     private static final List<Type> SCALAR_TYPES = asList(
-        String.class, Integer.class, int.class
-        // TODO other scalar types
+        Integer.class, int.class,
+        Double.class, double.class, // = Float in GraphQL speech
+        String.class, // includes ID
+        Boolean.class, boolean.class
     );
 
     public Type getNativeType() { return type; }
