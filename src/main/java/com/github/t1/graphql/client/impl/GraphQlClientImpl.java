@@ -1,9 +1,10 @@
-package com.github.t1.graphql.client;
+package com.github.t1.graphql.client.impl;
 
-import com.github.t1.graphql.client.reflection.FieldInfo;
-import com.github.t1.graphql.client.reflection.MethodInfo;
-import com.github.t1.graphql.client.reflection.ParameterInfo;
-import com.github.t1.graphql.client.reflection.TypeInfo;
+import com.github.t1.graphql.client.api.GraphQlClientException;
+import com.github.t1.graphql.client.impl.reflection.FieldInfo;
+import com.github.t1.graphql.client.impl.reflection.MethodInfo;
+import com.github.t1.graphql.client.impl.reflection.ParameterInfo;
+import com.github.t1.graphql.client.impl.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,9 +26,7 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Slf4j
 @RequiredArgsConstructor(access = PACKAGE)
-public class GraphQlClient {
-
-    public static GraphQlClientBuilder newBuilder() { return new GraphQlClientBuilder(); }
+class GraphQlClientImpl {
 
     private final WebTarget target;
     private final Jsonb jsonb;

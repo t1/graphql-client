@@ -1,4 +1,4 @@
-package com.github.t1.graphql.client.reflection;
+package com.github.t1.graphql.client.impl.reflection;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

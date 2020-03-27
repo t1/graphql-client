@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client;
 
+import com.github.t1.graphql.client.api.GraphQlClientBuilder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 
@@ -30,7 +31,7 @@ public class GraphQlClientFixture {
     }
 
     public <T> T buildClient(Class<T> apiClass) {
-        return GraphQlClient.newBuilder()
+        return GraphQlClientBuilder.newBuilder()
             .endpoint(DUMMY_URI)
             .client(mockClient)
             .build(apiClass);

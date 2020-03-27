@@ -1,6 +1,6 @@
-package com.github.t1.graphql.client.reflection;
+package com.github.t1.graphql.client.impl.reflection;
 
-import com.github.t1.graphql.client.GraphQlClientException;
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
