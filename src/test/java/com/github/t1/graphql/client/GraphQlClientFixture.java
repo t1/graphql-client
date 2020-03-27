@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 public class GraphQlClientFixture {
     private final Client mockClient = mock(Client.class);
     private final Invocation.Builder mockInvocationBuilder = mock(Invocation.Builder.class);
+    private URI endpoint = DUMMY_URI;
     private Response response;
 
     public GraphQlClientFixture() {
@@ -30,9 +31,13 @@ public class GraphQlClientFixture {
         given(mockInvocationBuilder.post(any())).will(i -> response);
     }
 
+    public void endpoint(URI endpoint) {
+        this.endpoint = endpoint;
+    }
+
     public <T> T buildClient(Class<T> apiClass) {
         return GraphQlClientBuilder.newBuilder()
-            .endpoint(DUMMY_URI)
+            .endpoint(endpoint)
             .client(mockClient)
             .build(apiClass);
     }

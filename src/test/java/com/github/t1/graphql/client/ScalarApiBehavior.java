@@ -10,7 +10,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class ScalarApiBehavior {
+class ScalarApiBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
 

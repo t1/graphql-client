@@ -14,7 +14,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class NestedBehavior {
+class NestedBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
     interface StringSetApi {

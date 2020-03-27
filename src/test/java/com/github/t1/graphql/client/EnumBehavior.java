@@ -9,7 +9,7 @@ import static com.github.t1.graphql.client.EnumBehavior.Episode.JEDI;
 import static com.github.t1.graphql.client.EnumBehavior.Episode.NEWHOPE;
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class EnumBehavior {
+class EnumBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
     enum Episode {

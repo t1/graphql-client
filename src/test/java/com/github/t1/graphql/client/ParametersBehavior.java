@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class ParametersBehavior {
+class ParametersBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
     interface ParamApi {

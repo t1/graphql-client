@@ -29,7 +29,7 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Slf4j
 @RequiredArgsConstructor(access = PACKAGE)
-class GraphQlClientImpl {
+class GraphQlClientProxy {
 
     private final WebTarget target;
     private final Jsonb jsonb;

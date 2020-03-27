@@ -2,6 +2,7 @@ package com.github.t1.graphql.client.impl;
 
 import com.github.t1.graphql.client.api.GraphQlClientBuilder;
 import com.github.t1.graphql.client.impl.reflection.MethodInfo;
+import org.eclipse.microprofile.config.ConfigProvider;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -36,11 +37,16 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
     }
 
     @Override public <T> T build(Class<T> apiClass) {
-        // TODO default endpoint from MP Config
-        WebTarget webTarget = client.target(endpoint);
-        GraphQlClientImpl graphQlClient = new GraphQlClientImpl(webTarget, jsonb);
+        WebTarget webTarget = client.target(resolveEndpoint(apiClass));
+        GraphQlClientProxy graphQlClient = new GraphQlClientProxy(webTarget, jsonb);
         return apiClass.cast(Proxy.newProxyInstance(apiClass.getClassLoader(), new Class<?>[]{apiClass},
             (proxy, method, args) -> graphQlClient.invoke(MethodInfo.of(method, args))));
+    }
+
+    private URI resolveEndpoint(Class<?> apiClass) {
+        if (endpoint != null)
+            return endpoint;
+        return ConfigProvider.getConfig().getValue(apiClass.getName() + "/mp-graphql/url", URI.class);
     }
 
     private static final Client DEFAULT_CLIENT = ClientBuilder.newClient();
