@@ -16,17 +16,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-public class GraphQlClientTester {
+public class GraphQlClientFixture {
     private final Client mockClient = mock(Client.class);
-    private final WebTarget mockWebTarget = mock(WebTarget.class);
     private final Invocation.Builder mockInvocationBuilder = mock(Invocation.Builder.class);
     private Response response;
 
-    public <T> T buildClient(Class<T> apiClass) {
+    public GraphQlClientFixture() {
+        WebTarget mockWebTarget = mock(WebTarget.class);
+
         given(mockClient.target(DUMMY_URI)).willReturn(mockWebTarget);
         given(mockWebTarget.request(APPLICATION_JSON_TYPE)).willReturn(mockInvocationBuilder);
         given(mockInvocationBuilder.post(any())).will(i -> response);
+    }
 
+    public <T> T buildClient(Class<T> apiClass) {
         return GraphQlClient.newBuilder()
             .endpoint(DUMMY_URI)
             .client(mockClient)

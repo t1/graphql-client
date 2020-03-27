@@ -84,7 +84,7 @@ public class GraphQlClient {
 
     private String field(FieldInfo field) {
         TypeInfo type = field.getType();
-        if (type.isCollection() && type.itemType().isScalar()) {
+        if (type.isScalar() || type.isCollection() && type.itemType().isScalar()) {
             return field.getName();
         } else {
             return field.getName() + fields(type);
