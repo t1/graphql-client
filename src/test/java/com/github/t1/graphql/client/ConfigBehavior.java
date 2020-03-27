@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client;
 
+import com.github.t1.graphql.client.api.GraphQlClientApi;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -37,6 +38,60 @@ class ConfigBehavior {
             then(foo).isTrue();
         } finally {
             System.clearProperty(API_URL_CONFIG_KEY);
+        }
+    }
+
+    @Test void shouldLoadEndpointFromKeyConfig() {
+        System.setProperty("dummy-config-key/mp-graphql/url", "http://dummy-endpoint");
+        try {
+            fixture.endpoint(null);
+            fixture.configKey("dummy-config-key");
+            Api api = fixture.buildClient(Api.class);
+            fixture.returnsData("\"foo\":true");
+
+            boolean foo = api.foo();
+
+            then(fixture.query()).isEqualTo("foo");
+            then(foo).isTrue();
+        } finally {
+            System.clearProperty("dummy-config-key");
+        }
+    }
+
+    @GraphQlClientApi(endpoint = "http://dummy-endpoint")
+    interface ConfiguredEndpointApi {
+        boolean foo();
+    }
+
+    @Test void shouldLoadAnnotatedEndpointConfig() {
+        fixture.endpoint(null);
+        ConfiguredEndpointApi api = fixture.buildClient(ConfiguredEndpointApi.class);
+        fixture.returnsData("\"foo\":true");
+
+        boolean foo = api.foo();
+
+        then(fixture.query()).isEqualTo("foo");
+        then(foo).isTrue();
+    }
+
+    @GraphQlClientApi(configKey = "dummy-config-key")
+    interface ConfiguredKeyApi {
+        boolean foo();
+    }
+
+    @Test void shouldLoadAnnotatedKeyConfig() {
+        System.setProperty("dummy-config-key/mp-graphql/url", "http://dummy-endpoint");
+        try {
+            fixture.endpoint(null);
+            ConfiguredKeyApi api = fixture.buildClient(ConfiguredKeyApi.class);
+            fixture.returnsData("\"foo\":true");
+
+            boolean foo = api.foo();
+
+            then(fixture.query()).isEqualTo("foo");
+            then(foo).isTrue();
+        } finally {
+            System.clearProperty("dummy-config-key");
         }
     }
 }

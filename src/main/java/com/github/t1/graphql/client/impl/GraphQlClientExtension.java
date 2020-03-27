@@ -9,22 +9,21 @@ import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
 public class GraphQlClientExtension implements Extension {
     private final Set<RuntimeException> errors = new LinkedHashSet<>();
-    private final Map<Class<?>, GraphQlClientApi> apis = new LinkedHashMap<>();
+    private final List<Class<?>> apis = new ArrayList<>();
 
     public void registerGraphQlClientApis(@Observes @WithAnnotations(GraphQlClientApi.class) ProcessAnnotatedType<?> type) {
         Class<?> javaClass = type.getAnnotatedType().getJavaClass();
         if (javaClass.isInterface()) {
             log.info("register {}", javaClass.getName());
-            GraphQlClientApi annotation = type.getAnnotatedType().getAnnotation(GraphQlClientApi.class);
-            apis.put(javaClass, annotation);
+            apis.add(javaClass);
         } else {
             errors.add(new IllegalArgumentException("Rest client needs to be an interface " + javaClass));
         }
@@ -37,8 +36,8 @@ public class GraphQlClientExtension implements Extension {
     }
 
     public void createProxies(@Observes AfterBeanDiscovery afterBeanDiscovery) {
-        for (Map.Entry<Class<?>, GraphQlClientApi> api : apis.entrySet()) {
-            afterBeanDiscovery.addBean(new GraphQlClientBean<>(api.getKey(), api.getValue()));
+        for (Class<?> api : apis) {
+            afterBeanDiscovery.addBean(new GraphQlClientBean<>(api));
         }
     }
 }

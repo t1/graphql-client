@@ -7,10 +7,7 @@ import javax.ws.rs.client.Client;
 import java.net.URI;
 
 public interface GraphQlClientBuilder {
-    static GraphQlClientBuilder newBuilder() {
-        // when the api is separated, we will use some resolver mechanism here
-        return new GraphQlClientBuilderImpl();
-    }
+    static GraphQlClientBuilder newBuilder() { return new GraphQlClientBuilderImpl(); }
 
     GraphQlClientBuilder endpoint(String endpoint);
 
@@ -19,6 +16,8 @@ public interface GraphQlClientBuilder {
     GraphQlClientBuilder client(Client client);
 
     GraphQlClientBuilder jsonb(Jsonb jsonb);
+
+    GraphQlClientBuilder configKey(String configKey);
 
     <T> T build(Class<T> apiClass);
 }

@@ -22,6 +22,7 @@ public class GraphQlClientFixture {
     private final Invocation.Builder mockInvocationBuilder = mock(Invocation.Builder.class);
     private URI endpoint = DUMMY_URI;
     private Response response;
+    private String configKey;
 
     public GraphQlClientFixture() {
         WebTarget mockWebTarget = mock(WebTarget.class);
@@ -35,9 +36,14 @@ public class GraphQlClientFixture {
         this.endpoint = endpoint;
     }
 
+    public void configKey(String configKey) {
+        this.configKey = configKey;
+    }
+
     public <T> T buildClient(Class<T> apiClass) {
         return GraphQlClientBuilder.newBuilder()
             .endpoint(endpoint)
+            .configKey(configKey)
             .client(mockClient)
             .build(apiClass);
     }
