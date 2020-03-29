@@ -8,6 +8,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +45,11 @@ public class TypeInfo {
 
     public boolean isOptional() {
         return Optional.class.equals(raw(type));
+    }
+
+    /** Types that JSON-B can convert to from JSON */
+    public boolean isConvertible() {
+        return CONVERTIBLE_TYPES.contains(raw(type));
     }
 
     public TypeInfo itemType() {
@@ -96,4 +112,11 @@ public class TypeInfo {
     public Type[] getNativeTypeArguments() {
         return ((ParameterizedType) type).getActualTypeArguments();
     }
+
+    public static final List<Class<?>> CONVERTIBLE_TYPES = asList(
+        LocalDate.class, LocalDateTime.class, LocalTime.class,
+        ZonedDateTime.class, Instant.class, OffsetDateTime.class,
+        Year.class, Month.class, DayOfWeek.class, MonthDay.class, YearMonth.class
+        // TODO maybe more?
+    );
 }

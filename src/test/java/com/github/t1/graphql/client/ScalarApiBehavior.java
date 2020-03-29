@@ -5,6 +5,7 @@ import org.eclipse.microprofile.graphql.Query;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
+import java.time.LocalDate;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
@@ -19,8 +20,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallIntegerQuery() {
-        IntegerApi api = fixture.buildClient(IntegerApi.class);
         fixture.returnsData("\"code\":5");
+        IntegerApi api = fixture.buildClient(IntegerApi.class);
 
         Integer code = api.code();
 
@@ -34,8 +35,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallIntQuery() {
-        IntApi api = fixture.buildClient(IntApi.class);
         fixture.returnsData("\"code\":5");
+        IntApi api = fixture.buildClient(IntApi.class);
 
         int code = api.code();
 
@@ -49,8 +50,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallBoolQuery() {
-        BoolApi api = fixture.buildClient(BoolApi.class);
         fixture.returnsData("\"bool\":true");
+        BoolApi api = fixture.buildClient(BoolApi.class);
 
         boolean bool = api.bool();
 
@@ -64,8 +65,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallBooleanQuery() {
-        BooleanApi api = fixture.buildClient(BooleanApi.class);
         fixture.returnsData("\"bool\":true");
+        BooleanApi api = fixture.buildClient(BooleanApi.class);
 
         Boolean bool = api.bool();
 
@@ -79,8 +80,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallDoubleQuery() {
-        DoubleApi api = fixture.buildClient(DoubleApi.class);
         fixture.returnsData("\"number\":123.456");
+        DoubleApi api = fixture.buildClient(DoubleApi.class);
 
         Double number = api.number();
 
@@ -94,8 +95,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallPrimitiveDoubleQuery() {
-        PrimitiveDoubleApi api = fixture.buildClient(PrimitiveDoubleApi.class);
         fixture.returnsData("\"number\":123.456");
+        PrimitiveDoubleApi api = fixture.buildClient(PrimitiveDoubleApi.class);
 
         double number = api.number();
 
@@ -109,8 +110,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallStringQuery() {
-        StringApi api = fixture.buildClient(StringApi.class);
         fixture.returnsData("\"greeting\":\"dummy-greeting\"");
+        StringApi api = fixture.buildClient(StringApi.class);
 
         String greeting = api.greeting();
 
@@ -119,8 +120,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldFailStringQueryNotFound() {
-        StringApi api = fixture.buildClient(StringApi.class);
         fixture.returns(Response.serverError().type(TEXT_PLAIN_TYPE).entity("failed").build());
+        StringApi api = fixture.buildClient(StringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -130,8 +131,8 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldFailOnQueryError() {
-        StringApi api = fixture.buildClient(StringApi.class);
         fixture.returns(Response.ok("{\"errors\":[{\"message\":\"failed\"}]}").build());
+        StringApi api = fixture.buildClient(StringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -146,12 +147,28 @@ class ScalarApiBehavior {
     }
 
     @Test void shouldCallRenamedStringQuery() {
-        RenamedStringApi api = fixture.buildClient(RenamedStringApi.class);
         fixture.returnsData("\"greeting\":\"dummy-greeting\"");
+        RenamedStringApi api = fixture.buildClient(RenamedStringApi.class);
 
         String greeting = api.foo();
 
         then(fixture.query()).isEqualTo("greeting");
         then(greeting).isEqualTo("dummy-greeting");
+    }
+
+
+    interface ConvertibleValueApi {
+        LocalDate now();
+    }
+
+    @Test void shouldCallConvertibleValueQuery() {
+        LocalDate now = LocalDate.now();
+        fixture.returnsData("\"now\":\"" + now + "\"");
+        ConvertibleValueApi api = fixture.buildClient(ConvertibleValueApi.class);
+
+        LocalDate response = api.now();
+
+        then(fixture.query()).isEqualTo("now");
+        then(response).isEqualTo(now);
     }
 }

@@ -4,6 +4,7 @@ import com.github.t1.graphql.client.api.GraphQlClientBuilder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -23,6 +24,7 @@ public class GraphQlClientFixture {
     private URI endpoint = DUMMY_URI;
     private Response response;
     private String configKey;
+    private Jsonb jsonb;
 
     public GraphQlClientFixture() {
         WebTarget mockWebTarget = mock(WebTarget.class);
@@ -36,16 +38,24 @@ public class GraphQlClientFixture {
         this.endpoint = endpoint;
     }
 
+    public void jsonb(Jsonb jsonb) {
+        this.jsonb = jsonb;
+    }
+
     public void configKey(String configKey) {
         this.configKey = configKey;
     }
 
     public <T> T buildClient(Class<T> apiClass) {
-        return GraphQlClientBuilder.newBuilder()
-            .endpoint(endpoint)
-            .configKey(configKey)
-            .client(mockClient)
-            .build(apiClass);
+        GraphQlClientBuilder builder = GraphQlClientBuilder.newBuilder();
+        if (endpoint != null)
+            builder.endpoint(endpoint);
+        builder.client(mockClient);
+        if (jsonb != null)
+            builder.jsonb(jsonb);
+        if (configKey != null)
+            builder.configKey(configKey);
+        return builder.build(apiClass);
     }
 
     public void returnsData(String data) {

@@ -23,8 +23,8 @@ class EnumBehavior {
     }
 
     @Test void shouldCallEnumQuery() {
-        EpisodeApi api = fixture.buildClient(EpisodeApi.class);
         fixture.returnsData("\"episode\":\"JEDI\"");
+        EpisodeApi api = fixture.buildClient(EpisodeApi.class);
 
         Episode episode = api.episode();
 
@@ -38,8 +38,8 @@ class EnumBehavior {
     }
 
     @Test void shouldCallEnumListQuery() {
-        EpisodesApi api = fixture.buildClient(EpisodesApi.class);
         fixture.returnsData("\"episodes\":[\"NEWHOPE\",\"EMPIRE\",\"JEDI\"]");
+        EpisodesApi api = fixture.buildClient(EpisodesApi.class);
 
         List<Episode> episode = api.episodes();
 

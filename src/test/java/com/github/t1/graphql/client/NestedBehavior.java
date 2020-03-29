@@ -22,8 +22,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringSetQuery() {
-        StringSetApi api = fixture.buildClient(StringSetApi.class);
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        StringSetApi api = fixture.buildClient(StringSetApi.class);
 
         Set<String> greetings = api.greetings();
 
@@ -37,8 +37,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringListQuery() {
-        StringListApi api = fixture.buildClient(StringListApi.class);
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        StringListApi api = fixture.buildClient(StringListApi.class);
 
         List<String> greetings = api.greetings();
 
@@ -52,8 +52,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringArrayQuery() {
-        StringArrayApi api = fixture.buildClient(StringArrayApi.class);
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        StringArrayApi api = fixture.buildClient(StringArrayApi.class);
 
         String[] greetings = api.greetings();
 
@@ -67,8 +67,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallEmptyOptionalStringQuery() {
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
         fixture.returnsData("\"greeting\":[]");
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
 
@@ -77,8 +77,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallOptionalStringQuery() {
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
         fixture.returnsData("\"greeting\":[\"hi\"]");
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
 
@@ -87,8 +87,8 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToCallOptionalStringQueryWithTwoValues() {
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
         fixture.returnsData("\"greeting\":[\"hi\",\"ho\"]");
+        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -102,8 +102,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallOptionalGreetingQuery() {
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
         fixture.returnsData("\"greeting\":[{\"text\":\"hi\",\"code\":5}]");
+        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
 
@@ -112,8 +112,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallEmptyOptionalGreetingQuery() {
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
         fixture.returnsData("\"greeting\":[]");
+        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
 
@@ -127,8 +127,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallOptionalGreetingListQuery() {
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
         fixture.returnsData("\"greeting\":[[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]]");
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
 
@@ -138,8 +138,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallEmptyOptionalGreetingListQuery() {
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
         fixture.returnsData("\"greeting\":[]");
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
 
@@ -148,8 +148,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallOptionalEmptyGreetingListQuery() {
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
         fixture.returnsData("\"greeting\":[[]]");
+        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
 
@@ -170,8 +170,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallObjectQuery() {
-        ObjectApi api = fixture.buildClient(ObjectApi.class);
         fixture.returnsData("\"greeting\":{\"text\":\"foo\",\"code\":5}");
+        ObjectApi api = fixture.buildClient(ObjectApi.class);
 
         Greeting greeting = api.greeting();
 
@@ -185,8 +185,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallObjectListQuery() {
-        ObjectListApi api = fixture.buildClient(ObjectListApi.class);
         fixture.returnsData("\"greetings\":[{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}]");
+        ObjectListApi api = fixture.buildClient(ObjectListApi.class);
 
         List<Greeting> greeting = api.greetings();
 
@@ -208,8 +208,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallNestedStringQuery() {
-        StringContainerApi api = fixture.buildClient(StringContainerApi.class);
         fixture.returnsData("\"container\":{\"greeting\":\"hi\",\"count\":5}");
+        StringContainerApi api = fixture.buildClient(StringContainerApi.class);
 
         StringContainer container = api.container();
 
@@ -229,8 +229,8 @@ class NestedBehavior {
     }
 
     @Test void shouldCallNestedObjectQuery() {
-        GreetingContainerApi api = fixture.buildClient(GreetingContainerApi.class);
         fixture.returnsData("\"container\":{\"greeting\":{\"text\":\"a\",\"code\":1},\"count\":3}");
+        GreetingContainerApi api = fixture.buildClient(GreetingContainerApi.class);
 
         GreetingContainer container = api.container();
 
@@ -251,10 +251,10 @@ class NestedBehavior {
     }
 
     @Test void shouldCallNestedListQuery() {
-        GreetingsContainerApi api = fixture.buildClient(GreetingsContainerApi.class);
         fixture.returnsData("\"container\":{\"greetings\":[" +
             "{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}" +
             "],\"count\":3}");
+        GreetingsContainerApi api = fixture.buildClient(GreetingsContainerApi.class);
 
         GreetingsContainer container = api.container();
 
@@ -280,10 +280,10 @@ class NestedBehavior {
     }
 
     @Test void shouldCallWrappedGreetingQuery() {
-        WrappedGreetingApi api = fixture.buildClient(WrappedGreetingApi.class);
         fixture.returnsData("\"container\":{\"greeting\":{" +
             "\"value\":{\"text\":\"a\",\"code\":1}}," +
             "\"count\":3}");
+        WrappedGreetingApi api = fixture.buildClient(WrappedGreetingApi.class);
 
         WrappedGreetingContainer container = api.container();
 

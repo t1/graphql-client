@@ -73,7 +73,7 @@ class GraphQlClientProxy {
     }
 
     private String fields(TypeInfo type) {
-        if (type.isScalar() || type.isEnum()) {
+        if (type.isScalar() || type.isEnum() || type.isConvertible()) {
             return "";
         } else if (type.isCollection()) {
             return fields(type.itemType());
