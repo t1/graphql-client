@@ -1,5 +1,6 @@
-package com.github.t1.graphql.client.impl;
+package com.github.t1.graphql.client.cdi;
 
+import com.github.t1.graphql.client.GraphQlClientBean;
 import com.github.t1.graphql.client.api.GraphQlClientApi;
 import lombok.extern.slf4j.Slf4j;
 

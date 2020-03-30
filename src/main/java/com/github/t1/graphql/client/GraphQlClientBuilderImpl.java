@@ -1,8 +1,8 @@
-package com.github.t1.graphql.client.impl;
+package com.github.t1.graphql.client;
 
 import com.github.t1.graphql.client.api.GraphQlClientApi;
 import com.github.t1.graphql.client.api.GraphQlClientBuilder;
-import com.github.t1.graphql.client.impl.reflection.MethodInfo;
+import com.github.t1.graphql.client.reflection.MethodInfo;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import javax.json.bind.Jsonb;

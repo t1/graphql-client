@@ -1,6 +1,6 @@
 package com.github.t1.graphql.client.api;
 
-import com.github.t1.graphql.client.impl.GraphQlClientBuilderImpl;
+import com.github.t1.graphql.client.GraphQlClientBuilderImpl;
 
 import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;

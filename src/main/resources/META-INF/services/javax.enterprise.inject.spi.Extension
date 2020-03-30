@@ -1,1 +1,1 @@
-com.github.t1.graphql.client.impl.GraphQlClientExtension
+com.github.t1.graphql.client.cdi.GraphQlClientExtension

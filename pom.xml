@@ -36,6 +36,8 @@
                     <withHistory>true</withHistory>
                     <timestampedReports>false</timestampedReports>
                     <excludedTestClasses>*IT</excludedTestClasses>
+                    <coverageThreshold>70</coverageThreshold>
+                    <mutationThreshold>50</mutationThreshold>
                 </configuration>
                 <dependencies>
                     <dependency>

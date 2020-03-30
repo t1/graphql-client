@@ -1,4 +1,4 @@
-package com.github.t1.graphql.client.impl;
+package com.github.t1.graphql.client.cdi;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
