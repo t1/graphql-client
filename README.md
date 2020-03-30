@@ -1,3 +1,5 @@
+![Build Pipeline](https://github.com/t1/graphql-client/workflows/Build%20Pipeline/badge.svg)
+
 # graphql-client
 
 A Java code first GraphQL Client API suggestion for [Microprofile GraphQL](https://github.com/eclipse/microprofile-graphql/issues/185).
