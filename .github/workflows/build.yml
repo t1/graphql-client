@@ -3,12 +3,10 @@ name: Build Pipeline
 on: [push]
 
 jobs:
-  build-microprofile-artifacts:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        repository: t1/microprofile-sandbox
     - uses: actions/setup-java@v1
       with:
         java-version: 8
@@ -17,44 +15,4 @@ jobs:
         path: ~/.m2/repository
         key: maven-${{ hashFiles('**/pom.xml') }}
     - name: mvn build
-      run: |
-        cd proposals/problem-details
-        mvn --batch-mode install
-    - uses: actions/upload-artifact@v1
-      with:
-        name: mp-problemdetails
-        path: /home/runner/.m2/repository/io/microprofile/sandbox/
-
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        container:
-        - wildfly
-        - open-liberty
-        - payara
-        #- tomee # TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
-        jdk: [8, 11]
-
-    runs-on: ubuntu-latest
-    needs: build-microprofile-artifacts
-    steps:
-    - name: Dump strategy context
-      env:
-        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-      run: echo "$STRATEGY_CONTEXT"
-    - uses: actions/checkout@v2
-    - name: Set up JDK ${{ matrix.jdk }}
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.jdk }}
-    - uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: maven-${{ hashFiles('**/pom.xml') }}
-    - uses: actions/download-artifact@v1
-      with:
-        name: mp-problemdetails
-        path: /home/runner/.m2/repository/io/microprofile/sandbox/
-    - name: Build with Maven
-      run: mvn --batch-mode install -Djee-testcontainer=${{ matrix.container }}
+      run: mvn --batch-mode verify
