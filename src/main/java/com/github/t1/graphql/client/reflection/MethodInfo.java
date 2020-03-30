@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client.reflection;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.graphql.Query;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = PRIVATE)
 public class MethodInfo {
     public static MethodInfo of(Method method, Object... args) {
