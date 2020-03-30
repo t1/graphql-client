@@ -1,17 +1,14 @@
 package com.github.t1.graphql.client;
 
-import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class NestedBehavior {
@@ -59,103 +56,6 @@ class NestedBehavior {
 
         then(fixture.query()).isEqualTo("greetings");
         then(greetings).containsExactly("a", "b");
-    }
-
-
-    interface OptionalStringApi {
-        Optional<String> greeting();
-    }
-
-    @Test void shouldCallEmptyOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":[]");
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
-
-        Optional<String> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).isEmpty();
-    }
-
-    @Test void shouldCallOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":[\"hi\"]");
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
-
-        Optional<String> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).contains("hi");
-    }
-
-    @Test void shouldFailToCallOptionalStringQueryWithTwoValues() {
-        fixture.returnsData("\"greeting\":[\"hi\",\"ho\"]");
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
-
-        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(thrown).hasMessage("more than one value in optional: [\"hi\",\"ho\"]");
-    }
-
-
-    interface OptionalGreetingApi {
-        Optional<Greeting> greeting();
-    }
-
-    @Test void shouldCallOptionalGreetingQuery() {
-        fixture.returnsData("\"greeting\":[{\"text\":\"hi\",\"code\":5}]");
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
-
-        Optional<Greeting> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting {text code}");
-        then(greeting).contains(new Greeting("hi", 5));
-    }
-
-    @Test void shouldCallEmptyOptionalGreetingQuery() {
-        fixture.returnsData("\"greeting\":[]");
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
-
-        Optional<Greeting> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting {text code}");
-        then(greeting).isEmpty();
-    }
-
-
-    interface OptionalGreetingListApi {
-        Optional<List<Greeting>> greeting();
-    }
-
-    @Test void shouldCallOptionalGreetingListQuery() {
-        fixture.returnsData("\"greeting\":[[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]]");
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
-
-        Optional<List<Greeting>> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting {text code}");
-        assert greeting.isPresent();
-        then(greeting.get()).contains(new Greeting("hi", 5), new Greeting("ho", 7));
-    }
-
-    @Test void shouldCallEmptyOptionalGreetingListQuery() {
-        fixture.returnsData("\"greeting\":[]");
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
-
-        Optional<List<Greeting>> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting {text code}");
-        then(greeting).isEmpty();
-    }
-
-    @Test void shouldCallOptionalEmptyGreetingListQuery() {
-        fixture.returnsData("\"greeting\":[[]]");
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
-
-        Optional<List<Greeting>> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting {text code}");
-        assert greeting.isPresent();
-        then(greeting.get()).isEmpty();
     }
 
 

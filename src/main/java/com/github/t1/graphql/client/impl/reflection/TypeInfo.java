@@ -4,21 +4,13 @@ import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,21 +31,15 @@ public class TypeInfo {
 
     public boolean isCollection() {
         return ifClass(Class::isArray)
-            || isOptional() // MP GraphQL represents Optionals as Arrays with zero or one items
             || Collection.class.isAssignableFrom(raw(type));
     }
 
-    public boolean isOptional() {
-        return Optional.class.equals(raw(type));
-    }
-
-    /** Types that JSON-B can convert to from JSON */
-    public boolean isConvertible() {
-        return CONVERTIBLE_TYPES.contains(raw(type));
+    private boolean ifClass(Predicate<Class<?>> predicate) {
+        return (type instanceof Class) && predicate.test((Class<?>) type);
     }
 
     public TypeInfo itemType() {
-        assert isCollection();
+        assert isCollection() || isWrapped();
         Type itemType = (type instanceof ParameterizedType)
             ? ((ParameterizedType) type).getActualTypeArguments()[0]
             : ((Class<?>) type).getComponentType();
@@ -73,50 +59,51 @@ public class TypeInfo {
         if (type instanceof ParameterizedType)
             return raw(((ParameterizedType) type).getRawType());
         if (type instanceof TypeVariable)
-            return resolveTypeVariable((TypeVariable<?>) type);
+            return resolveTypeVariable();
         throw new GraphQlClientException("unsupported reflection type " + type.getClass());
     }
 
-    private Class<?> resolveTypeVariable(TypeVariable<?> typeVariable) {
+    private Class<?> resolveTypeVariable() {
         // TODO this is not generally correct
-        if (container.type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) container.type;
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            if (actualTypeArguments.length >= 1 && actualTypeArguments[0] instanceof Class) {
-                return (Class<?>) actualTypeArguments[0];
-            }
-        }
-        return raw(typeVariable.getBounds()[0]);
+        ParameterizedType parameterizedType = (ParameterizedType) container.type;
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        return (Class<?>) actualTypeArguments[0];
     }
 
-
-    public boolean isEnum() { return ifClass(Class::isEnum); }
-
-    private boolean ifClass(Predicate<Class<?>> predicate) {
-        return (type instanceof Class) && predicate.test((Class<?>) type);
+    public boolean isWrapped() {
+        return Optional.class.equals(raw(type));
     }
 
     public boolean isScalar() {
-        return SCALAR_TYPES.contains(type);
+        return PRIMITIVE_SCALAR_TYPES.contains(type) || ifClass(Class::isEnum) || ifClass(this::isScalar);
     }
 
-    private static final List<Type> SCALAR_TYPES = asList(
-        Integer.class, int.class,
-        Double.class, double.class, // = Float in GraphQL speech
+    private static final List<Type> PRIMITIVE_SCALAR_TYPES = asList(
+        int.class,
+        double.class, // = Float in GraphQL speech
         String.class, // includes ID
-        Boolean.class, boolean.class
+        boolean.class
     );
+
+    private boolean isScalar(Class<?> type) {
+        return Stream.of(type.getConstructors()).anyMatch(this::hasOneStringParameter)
+            || Stream.of(type.getMethods()).anyMatch(this::isStaticStringConstructor);
+    }
+
+    private boolean hasOneStringParameter(Executable executable) {
+        return executable.getParameterCount() == 1 && CharSequence.class.isAssignableFrom(executable.getParameterTypes()[0]);
+    }
+
+    private boolean isStaticStringConstructor(Method method) {
+        return isStaticConstructorMethodNamed(method, "parse")
+            || isStaticConstructorMethodNamed(method, "valueOf");
+    }
+
+    private boolean isStaticConstructorMethodNamed(Method method, String name) {
+        return method.getName().equals(name) && Modifier.isStatic(method.getModifiers())
+            && method.getReturnType().equals(type)
+            && hasOneStringParameter(method);
+    }
 
     public Type getNativeType() { return type; }
-
-    public Type[] getNativeTypeArguments() {
-        return ((ParameterizedType) type).getActualTypeArguments();
-    }
-
-    public static final List<Class<?>> CONVERTIBLE_TYPES = asList(
-        LocalDate.class, LocalDateTime.class, LocalTime.class,
-        ZonedDateTime.class, Instant.class, OffsetDateTime.class,
-        Year.class, Month.class, DayOfWeek.class, MonthDay.class, YearMonth.class
-        // TODO maybe more?
-    );
 }

@@ -5,6 +5,7 @@ import org.eclipse.microprofile.graphql.Query;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
+import java.math.BigInteger;
 import java.time.LocalDate;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
@@ -137,8 +138,18 @@ class ScalarApiBehavior {
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
         then(fixture.query()).isEqualTo("greeting");
-        then(thrown).hasMessage("GraphQL error: [{\"message\":\"failed\"}]:\n" +
+        then(thrown).hasMessage("errors from service: [{\"message\":\"failed\"}]:\n" +
             "  {\"query\":\"{ greeting }\"}");
+    }
+
+    @Test void shouldFailOnMissingQueryResponse() {
+        fixture.returnsData("");
+        StringApi api = fixture.buildClient(StringApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("greeting");
+        then(thrown).hasMessage("no data for 'greeting':\n  {}");
     }
 
 
@@ -157,18 +168,49 @@ class ScalarApiBehavior {
     }
 
 
-    interface ConvertibleValueApi {
+    interface ScalarWithValueOfApi {
+        Integer foo();
+    }
+
+    @Test void shouldCallScalarWithValueOfQuery() {
+        fixture.returnsData("\"foo\":123456");
+        ScalarWithValueOfApi api = fixture.buildClient(ScalarWithValueOfApi.class);
+
+        Integer value = api.foo();
+
+        then(fixture.query()).isEqualTo("foo");
+        then(value).isEqualTo(123456);
+    }
+
+
+    interface ScalarWithParseApi {
         LocalDate now();
     }
 
-    @Test void shouldCallConvertibleValueQuery() {
+    @Test void shouldCallScalarWithParseQuery() {
         LocalDate now = LocalDate.now();
         fixture.returnsData("\"now\":\"" + now + "\"");
-        ConvertibleValueApi api = fixture.buildClient(ConvertibleValueApi.class);
+        ScalarWithParseApi api = fixture.buildClient(ScalarWithParseApi.class);
 
-        LocalDate response = api.now();
+        LocalDate value = api.now();
 
         then(fixture.query()).isEqualTo("now");
-        then(response).isEqualTo(now);
+        then(value).isEqualTo(now);
+    }
+
+
+    interface ScalarWithStringConstructorApi {
+        BigInteger foo();
+    }
+
+    @Test void shouldCallScalarWithStringConstructorApiQuery() {
+        String bigNumber = "1234567890123456789012345678901234567890123456789012345678901234567890";
+        fixture.returnsData("\"foo\":" + bigNumber);
+        ScalarWithStringConstructorApi api = fixture.buildClient(ScalarWithStringConstructorApi.class);
+
+        BigInteger value = api.foo();
+
+        then(fixture.query()).isEqualTo("foo");
+        then(value).isEqualTo(bigNumber);
     }
 }
