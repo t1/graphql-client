@@ -3,6 +3,7 @@ package com.github.t1.graphql.client.reflection;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import javax.json.bind.annotation.JsonbProperty;
 import java.lang.reflect.Field;
 
 import static lombok.AccessLevel.PACKAGE;
@@ -19,5 +20,9 @@ public class FieldInfo {
         return new TypeInfo(container, field.getGenericType());
     }
 
-    public String getName() { return field.getName(); }
+    public String getName() {
+        if (field.isAnnotationPresent(JsonbProperty.class))
+            return field.getAnnotation(JsonbProperty.class).value();
+        return field.getName();
+    }
 }
