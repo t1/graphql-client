@@ -4,6 +4,7 @@ import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.microprofile.graphql.Name;
 
 import java.lang.reflect.Parameter;
 
@@ -17,6 +18,8 @@ public class ParameterInfo {
     @Override public String toString() { return "parameter '" + parameter.getName() + "' in " + method; }
 
     public String getName() {
+        if (parameter.isAnnotationPresent(Name.class))
+            return parameter.getAnnotation(Name.class).value();
         if (!parameter.isNamePresent())
             throw new GraphQlClientException("compile with -parameters to add the parameter names to the class file");
         return parameter.getName();

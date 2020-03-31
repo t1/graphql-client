@@ -1,7 +1,6 @@
 package com.github.t1.graphql.client;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
-import org.eclipse.microprofile.graphql.Query;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
@@ -150,21 +149,6 @@ class ScalarApiBehavior {
 
         then(fixture.query()).isEqualTo("greeting");
         then(thrown).hasMessage("no data for 'greeting':\n  {}");
-    }
-
-
-    interface RenamedStringApi {
-        @Query("greeting") String foo();
-    }
-
-    @Test void shouldCallRenamedStringQuery() {
-        fixture.returnsData("\"greeting\":\"dummy-greeting\"");
-        RenamedStringApi api = fixture.buildClient(RenamedStringApi.class);
-
-        String greeting = api.foo();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).isEqualTo("dummy-greeting");
     }
 
 
