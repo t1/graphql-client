@@ -11,19 +11,23 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 public class GraphQlClientFixture {
     private final Client mockClient = mock(Client.class);
     private final Invocation.Builder mockInvocationBuilder = mock(Invocation.Builder.class);
+    private String configKey;
+    private final Map<String, String> headers = new LinkedHashMap<>();
     private URI endpoint = DUMMY_URI;
     private Response response;
-    private String configKey;
     private Jsonb jsonb;
 
     public GraphQlClientFixture() {
@@ -31,7 +35,12 @@ public class GraphQlClientFixture {
 
         given(mockClient.target(DUMMY_URI)).willReturn(mockWebTarget);
         given(mockWebTarget.request(APPLICATION_JSON_TYPE)).willReturn(mockInvocationBuilder);
+        given(mockInvocationBuilder.header(any(), any())).willReturn(mockInvocationBuilder);
         given(mockInvocationBuilder.post(any())).will(i -> response);
+    }
+
+    public void withHeader(String name, String value) {
+        this.headers.put(name, value);
     }
 
     public void endpoint(URI endpoint) {
@@ -50,6 +59,7 @@ public class GraphQlClientFixture {
         GraphQlClientBuilder builder = GraphQlClientBuilder.newBuilder();
         if (endpoint != null)
             builder.endpoint(endpoint);
+        headers.forEach(builder::header);
         builder.client(mockClient);
         if (jsonb != null)
             builder.jsonb(jsonb);
@@ -80,6 +90,13 @@ public class GraphQlClientFixture {
     private String stripQueryContainer(String response) {
         then(response).startsWith(QUERY_PREFIX).endsWith(QUERY_SUFFIX);
         return response.substring(QUERY_PREFIX.length(), response.length() - QUERY_SUFFIX.length()).trim();
+    }
+
+
+    public String sentHeader(String name) {
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        BDDMockito.then(mockInvocationBuilder).should().header(eq(name), captor.capture());
+        return captor.getValue();
     }
 
 

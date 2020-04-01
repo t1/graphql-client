@@ -9,15 +9,17 @@ import java.net.URI;
 public interface GraphQlClientBuilder {
     static GraphQlClientBuilder newBuilder() { return new GraphQlClientBuilderImpl(); }
 
-    GraphQlClientBuilder endpoint(String endpoint);
-
-    GraphQlClientBuilder endpoint(URI endpoint);
+    GraphQlClientBuilder configKey(String configKey);
 
     GraphQlClientBuilder client(Client client);
 
-    GraphQlClientBuilder jsonb(Jsonb jsonb);
+    default GraphQlClientBuilder endpoint(String endpoint) { return endpoint(URI.create(endpoint)); }
 
-    GraphQlClientBuilder configKey(String configKey);
+    GraphQlClientBuilder endpoint(URI endpoint);
+
+    GraphQlClientBuilder header(String name, String value);
+
+    GraphQlClientBuilder jsonb(Jsonb jsonb);
 
     <T> T build(Class<T> apiClass);
 }

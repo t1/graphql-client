@@ -12,15 +12,19 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.lang.reflect.Proxy;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
-    private URI endpoint;
-    private Client client = DEFAULT_CLIENT;
-    private Jsonb jsonb = DEFAULT_JSONB;
     private String configKey = null;
+    private Client client = DEFAULT_CLIENT;
+    private URI endpoint;
+    private final Map<String, String> headers = new HashMap<>();
+    private Jsonb jsonb = DEFAULT_JSONB;
 
-    @Override public GraphQlClientBuilder endpoint(String endpoint) {
-        return endpoint(URI.create(endpoint));
+    @Override public GraphQlClientBuilder header(String name, String value) {
+        headers.put(name, value);
+        return this;
     }
 
     @Override public GraphQlClientBuilder endpoint(URI endpoint) {
@@ -47,7 +51,7 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
         readConfig(apiClass.getAnnotation(GraphQlClientApi.class));
 
         WebTarget webTarget = client.target(resolveEndpoint(apiClass));
-        GraphQlClientProxy graphQlClient = new GraphQlClientProxy(webTarget, jsonb);
+        GraphQlClientProxy graphQlClient = new GraphQlClientProxy(webTarget, headers, jsonb);
         return apiClass.cast(Proxy.newProxyInstance(apiClass.getClassLoader(), new Class<?>[]{apiClass},
             (proxy, method, args) -> graphQlClient.invoke(MethodInfo.of(method, args))));
     }

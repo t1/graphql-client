@@ -14,10 +14,12 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import java.io.StringReader;
+import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -29,6 +31,7 @@ import static lombok.AccessLevel.PACKAGE;
 class GraphQlClientProxy {
 
     private final WebTarget target;
+    private final Map<String, String> headers;
     private final Jsonb jsonb;
 
     Object invoke(MethodInfo method) {
@@ -93,7 +96,9 @@ class GraphQlClientProxy {
     }
 
     private String post(String request) {
-        Response response = target.request(APPLICATION_JSON_TYPE).post(Entity.json(request));
+        Builder requestBuilder = target.request(APPLICATION_JSON_TYPE);
+        headers.forEach(requestBuilder::header);
+        Response response = requestBuilder.post(Entity.json(request));
         StatusType status = response.getStatusInfo();
         if (status.getFamily() != SUCCESSFUL)
             throw new GraphQlClientException("expected successful status code but got " +
