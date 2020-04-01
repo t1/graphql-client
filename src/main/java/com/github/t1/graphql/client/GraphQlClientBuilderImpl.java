@@ -10,20 +10,25 @@ import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Proxy;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
     private String configKey = null;
     private Client client = DEFAULT_CLIENT;
     private URI endpoint;
-    private final Map<String, String> headers = new HashMap<>();
+    private final MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
     private Jsonb jsonb = DEFAULT_JSONB;
 
-    @Override public GraphQlClientBuilder header(String name, String value) {
-        headers.put(name, value);
+    @Override public GraphQlClientBuilder header(String name, Object value) {
+        headers.add(name, value);
+        return this;
+    }
+
+    @Override public GraphQlClientBuilder headers(MultivaluedMap<String, Object> headers) {
+        headers.forEach(this.headers::addAll);
         return this;
     }
 

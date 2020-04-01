@@ -4,8 +4,10 @@ import com.github.t1.graphql.client.GraphQlClientBuilderImpl;
 
 import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
 
+@SuppressWarnings("UnusedReturnValue")
 public interface GraphQlClientBuilder {
     static GraphQlClientBuilder newBuilder() { return new GraphQlClientBuilderImpl(); }
 
@@ -17,7 +19,9 @@ public interface GraphQlClientBuilder {
 
     GraphQlClientBuilder endpoint(URI endpoint);
 
-    GraphQlClientBuilder header(String name, String value);
+    GraphQlClientBuilder header(String name, Object value);
+
+    GraphQlClientBuilder headers(MultivaluedMap<String, Object> headers);
 
     GraphQlClientBuilder jsonb(Jsonb jsonb);
 
