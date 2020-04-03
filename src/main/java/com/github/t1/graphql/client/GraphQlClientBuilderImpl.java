@@ -2,6 +2,7 @@ package com.github.t1.graphql.client;
 
 import com.github.t1.graphql.client.api.GraphQlClientApi;
 import com.github.t1.graphql.client.api.GraphQlClientBuilder;
+import com.github.t1.graphql.client.api.GraphQlClientHeader;
 import com.github.t1.graphql.client.reflection.MethodInfo;
 import org.eclipse.microprofile.config.ConfigProvider;
 
@@ -10,25 +11,20 @@ import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Proxy;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
     private String configKey = null;
     private Client client = DEFAULT_CLIENT;
     private URI endpoint;
-    private final MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    private final List<GraphQlClientHeader> headers = new ArrayList<>();
     private Jsonb jsonb = DEFAULT_JSONB;
 
-    @Override public GraphQlClientBuilder header(String name, Object value) {
-        headers.add(name, value);
-        return this;
-    }
-
-    @Override public GraphQlClientBuilder headers(MultivaluedMap<String, Object> headers) {
-        headers.forEach(this.headers::addAll);
+    @Override public GraphQlClientBuilder header(GraphQlClientHeader header) {
+        headers.add(header);
         return this;
     }
 

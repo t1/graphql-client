@@ -58,7 +58,7 @@ public class GraphQlClientFixture {
         GraphQlClientBuilder builder = GraphQlClientBuilder.newBuilder();
         if (endpoint != null)
             builder.endpoint(endpoint);
-        builder.headers(headers);
+        headers.forEach((name, values) -> values.forEach(value -> builder.header(name, value)));
         builder.client(mockClient);
         if (jsonb != null)
             builder.jsonb(jsonb);
