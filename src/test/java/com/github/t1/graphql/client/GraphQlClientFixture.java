@@ -4,12 +4,10 @@ import com.github.t1.graphql.client.api.GraphQlClientBuilder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 
-import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -23,48 +21,23 @@ import static org.mockito.Mockito.mock;
 public class GraphQlClientFixture {
     private final Client mockClient = mock(Client.class);
     private final Invocation.Builder mockInvocationBuilder = mock(Invocation.Builder.class);
-    private String configKey;
-    private final MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-    private URI endpoint = DUMMY_URI;
     private Response response;
-    private Jsonb jsonb;
 
     public GraphQlClientFixture() {
         WebTarget mockWebTarget = mock(WebTarget.class);
 
-        given(mockClient.target(DUMMY_URI)).willReturn(mockWebTarget);
+        given(mockClient.target(any(URI.class))).willReturn(mockWebTarget);
         given(mockWebTarget.request(APPLICATION_JSON_TYPE)).willReturn(mockInvocationBuilder);
         given(mockInvocationBuilder.headers(any())).willReturn(mockInvocationBuilder);
         given(mockInvocationBuilder.post(any())).will(i -> response);
     }
 
-    public void withHeader(String name, Object value) {
-        this.headers.add(name, value);
+    public GraphQlClientBuilder builder() {
+        return builderWithoutEndpointConfig().endpoint("urn:dummy-endpoint");
     }
 
-    public void endpoint(URI endpoint) {
-        this.endpoint = endpoint;
-    }
-
-    public void jsonb(Jsonb jsonb) {
-        this.jsonb = jsonb;
-    }
-
-    public void configKey(String configKey) {
-        this.configKey = configKey;
-    }
-
-    public <T> T buildClient(Class<T> apiClass) {
-        GraphQlClientBuilder builder = GraphQlClientBuilder.newBuilder();
-        if (endpoint != null)
-            builder.endpoint(endpoint);
-        headers.forEach((name, values) -> values.forEach(value -> builder.header(name, value)));
-        builder.client(mockClient);
-        if (jsonb != null)
-            builder.jsonb(jsonb);
-        if (configKey != null)
-            builder.configKey(configKey);
-        return builder.build(apiClass);
+    public GraphQlClientBuilder builderWithoutEndpointConfig() {
+        return GraphQlClientBuilder.newBuilder().client(mockClient);
     }
 
     public void returnsData(String data) {
@@ -96,14 +69,18 @@ public class GraphQlClientFixture {
         return sentHeaders().getFirst(name);
     }
 
+    public URI endpointUsed() {
+        ArgumentCaptor<URI> captor = ArgumentCaptor.forClass(URI.class);
+        BDDMockito.then(mockClient).should().target(captor.capture());
+        return captor.getValue();
+    }
+
     public MultivaluedMap<String, Object> sentHeaders() {
         @SuppressWarnings("unchecked") ArgumentCaptor<MultivaluedMap<String, Object>> captor = ArgumentCaptor.forClass(MultivaluedMap.class);
         BDDMockito.then(mockInvocationBuilder).should().headers(captor.capture());
         return captor.getValue();
     }
 
-
-    private static final URI DUMMY_URI = URI.create("http://dummy-endpoint");
     private static final String QUERY_PREFIX = "{\"query\":\"{";
     private static final String QUERY_SUFFIX = "}\"}";
 }

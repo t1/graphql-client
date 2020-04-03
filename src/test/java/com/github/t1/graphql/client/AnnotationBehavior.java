@@ -20,7 +20,7 @@ public class AnnotationBehavior {
 
     @Test void shouldCallRenamedStringQuery() {
         fixture.returnsData("\"greeting\":\"dummy-greeting\"");
-        RenamedStringApi api = fixture.buildClient(RenamedStringApi.class);
+        RenamedStringApi api = fixture.builder().build(RenamedStringApi.class);
 
         String greeting = api.foo();
 
@@ -35,7 +35,7 @@ public class AnnotationBehavior {
 
     @Test void shouldCallParamQuery() {
         fixture.returnsData("\"greeting\":\"hi, foo\"");
-        RenamedParamApi api = fixture.buildClient(RenamedParamApi.class);
+        RenamedParamApi api = fixture.builder().build(RenamedParamApi.class);
 
         String greeting = api.greeting("foo");
 
@@ -56,7 +56,7 @@ public class AnnotationBehavior {
 
     @Test void shouldCallObjectQuery() {
         fixture.returnsData("\"greeting\":{\"foo\":\"foo\",\"key\":5}");
-        ObjectApi api = fixture.buildClient(ObjectApi.class);
+        ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         Greeting greeting = api.greeting();
 

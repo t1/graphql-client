@@ -6,7 +6,6 @@ import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
-@SuppressWarnings("UnusedReturnValue")
 public interface GraphQlClientBuilder {
 
     static GraphQlClientBuilder newBuilder() { return new GraphQlClientBuilderImpl(); }

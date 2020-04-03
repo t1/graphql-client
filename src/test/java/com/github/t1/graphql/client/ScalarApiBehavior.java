@@ -21,7 +21,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallIntegerQuery() {
         fixture.returnsData("\"code\":5");
-        IntegerApi api = fixture.buildClient(IntegerApi.class);
+        IntegerApi api = fixture.builder().build(IntegerApi.class);
 
         Integer code = api.code();
 
@@ -36,7 +36,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallIntQuery() {
         fixture.returnsData("\"code\":5");
-        IntApi api = fixture.buildClient(IntApi.class);
+        IntApi api = fixture.builder().build(IntApi.class);
 
         int code = api.code();
 
@@ -51,7 +51,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallBoolQuery() {
         fixture.returnsData("\"bool\":true");
-        BoolApi api = fixture.buildClient(BoolApi.class);
+        BoolApi api = fixture.builder().build(BoolApi.class);
 
         boolean bool = api.bool();
 
@@ -66,7 +66,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallBooleanQuery() {
         fixture.returnsData("\"bool\":true");
-        BooleanApi api = fixture.buildClient(BooleanApi.class);
+        BooleanApi api = fixture.builder().build(BooleanApi.class);
 
         Boolean bool = api.bool();
 
@@ -81,7 +81,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallDoubleQuery() {
         fixture.returnsData("\"number\":123.456");
-        DoubleApi api = fixture.buildClient(DoubleApi.class);
+        DoubleApi api = fixture.builder().build(DoubleApi.class);
 
         Double number = api.number();
 
@@ -96,7 +96,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallPrimitiveDoubleQuery() {
         fixture.returnsData("\"number\":123.456");
-        PrimitiveDoubleApi api = fixture.buildClient(PrimitiveDoubleApi.class);
+        PrimitiveDoubleApi api = fixture.builder().build(PrimitiveDoubleApi.class);
 
         double number = api.number();
 
@@ -111,7 +111,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallStringQuery() {
         fixture.returnsData("\"greeting\":\"dummy-greeting\"");
-        StringApi api = fixture.buildClient(StringApi.class);
+        StringApi api = fixture.builder().build(StringApi.class);
 
         String greeting = api.greeting();
 
@@ -121,7 +121,7 @@ class ScalarApiBehavior {
 
     @Test void shouldFailStringQueryNotFound() {
         fixture.returns(Response.serverError().type(TEXT_PLAIN_TYPE).entity("failed").build());
-        StringApi api = fixture.buildClient(StringApi.class);
+        StringApi api = fixture.builder().build(StringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -132,7 +132,7 @@ class ScalarApiBehavior {
 
     @Test void shouldFailOnQueryError() {
         fixture.returns(Response.ok("{\"errors\":[{\"message\":\"failed\"}]}").build());
-        StringApi api = fixture.buildClient(StringApi.class);
+        StringApi api = fixture.builder().build(StringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -143,7 +143,7 @@ class ScalarApiBehavior {
 
     @Test void shouldFailOnMissingQueryResponse() {
         fixture.returnsData("");
-        StringApi api = fixture.buildClient(StringApi.class);
+        StringApi api = fixture.builder().build(StringApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
@@ -158,7 +158,7 @@ class ScalarApiBehavior {
 
     @Test void shouldCallScalarWithValueOfQuery() {
         fixture.returnsData("\"foo\":123456");
-        ScalarWithValueOfApi api = fixture.buildClient(ScalarWithValueOfApi.class);
+        ScalarWithValueOfApi api = fixture.builder().build(ScalarWithValueOfApi.class);
 
         Integer value = api.foo();
 
@@ -174,7 +174,7 @@ class ScalarApiBehavior {
     @Test void shouldCallScalarWithParseQuery() {
         LocalDate now = LocalDate.now();
         fixture.returnsData("\"now\":\"" + now + "\"");
-        ScalarWithParseApi api = fixture.buildClient(ScalarWithParseApi.class);
+        ScalarWithParseApi api = fixture.builder().build(ScalarWithParseApi.class);
 
         LocalDate value = api.now();
 
@@ -190,7 +190,7 @@ class ScalarApiBehavior {
     @Test void shouldCallScalarWithStringConstructorApiQuery() {
         String bigNumber = "1234567890123456789012345678901234567890123456789012345678901234567890";
         fixture.returnsData("\"foo\":" + bigNumber);
-        ScalarWithStringConstructorApi api = fixture.buildClient(ScalarWithStringConstructorApi.class);
+        ScalarWithStringConstructorApi api = fixture.builder().build(ScalarWithStringConstructorApi.class);
 
         BigInteger value = api.foo();
 

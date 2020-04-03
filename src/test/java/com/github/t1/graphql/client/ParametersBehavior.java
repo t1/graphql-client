@@ -13,7 +13,7 @@ class ParametersBehavior {
 
     @Test void shouldCallParamQuery() {
         fixture.returnsData("\"greeting\":\"hi, foo\"");
-        ParamApi api = fixture.buildClient(ParamApi.class);
+        ParamApi api = fixture.builder().build(ParamApi.class);
 
         String greeting = api.greeting("foo");
 
@@ -28,7 +28,7 @@ class ParametersBehavior {
 
     @Test void shouldCallTwoParamsQuery() {
         fixture.returnsData("\"greeting\":\"hi, foo 3\"");
-        ParamsApi api = fixture.buildClient(ParamsApi.class);
+        ParamsApi api = fixture.builder().build(ParamsApi.class);
 
         String greeting = api.greeting("foo", 3);
 

@@ -17,9 +17,10 @@ public class JsonBehavior {
     }
 
     @Test void shouldConfigureJsonb() {
-        fixture.jsonb(JsonbBuilder.create(new JsonbConfig().setProperty(DATE_FORMAT, "dd.MM.yyyy")));
         fixture.returnsData("\"foo\":\"27.03.2020\"");
-        Api api = fixture.buildClient(Api.class);
+        Api api = fixture.builder()
+            .jsonb(JsonbBuilder.create(new JsonbConfig().setProperty(DATE_FORMAT, "dd.MM.yyyy")))
+            .build(Api.class);
 
         LocalDate foo = api.foo();
 

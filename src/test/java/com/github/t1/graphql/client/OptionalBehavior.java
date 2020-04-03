@@ -18,7 +18,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallNullOptionalStringQuery() {
         fixture.returnsData("\"greeting\":null");
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
+        OptionalStringApi api = fixture.builder().build(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
 
@@ -28,7 +28,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallOptionalStringQuery() {
         fixture.returnsData("\"greeting\":\"hi\"");
-        OptionalStringApi api = fixture.buildClient(OptionalStringApi.class);
+        OptionalStringApi api = fixture.builder().build(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
 
@@ -43,7 +43,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallOptionalGreetingQuery() {
         fixture.returnsData("\"greeting\":{\"text\":\"hi\",\"code\":5}");
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
+        OptionalGreetingApi api = fixture.builder().build(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
 
@@ -53,7 +53,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallNullOptionalGreetingQuery() {
         fixture.returnsData("\"greeting\":null");
-        OptionalGreetingApi api = fixture.buildClient(OptionalGreetingApi.class);
+        OptionalGreetingApi api = fixture.builder().build(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
 
@@ -68,7 +68,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallOptionalGreetingListQuery() {
         fixture.returnsData("\"greeting\":[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]");
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
+        OptionalGreetingListApi api = fixture.builder().build(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
 
@@ -79,7 +79,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallEmptyOptionalGreetingListQuery() {
         fixture.returnsData("\"greeting\":[]");
-        OptionalGreetingListApi api = fixture.buildClient(OptionalGreetingListApi.class);
+        OptionalGreetingListApi api = fixture.builder().build(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
 
@@ -95,7 +95,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallListOfOptionalGreetingsQuery() {
         fixture.returnsData("\"greetings\":[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]");
-        ListOfOptionalGreetingApi api = fixture.buildClient(ListOfOptionalGreetingApi.class);
+        ListOfOptionalGreetingApi api = fixture.builder().build(ListOfOptionalGreetingApi.class);
 
         List<Optional<Greeting>> greetings = api.greetings();
 
@@ -107,7 +107,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallEmptyListOfOptionalGreetingsQuery() {
         fixture.returnsData("\"greetings\":[]");
-        ListOfOptionalGreetingApi api = fixture.buildClient(ListOfOptionalGreetingApi.class);
+        ListOfOptionalGreetingApi api = fixture.builder().build(ListOfOptionalGreetingApi.class);
 
         List<Optional<Greeting>> greetings = api.greetings();
 
@@ -122,7 +122,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallNullOptionalOptionalStringQuery() {
         fixture.returnsData("\"greeting\":null");
-        OptionalOptionalStringApi api = fixture.buildClient(OptionalOptionalStringApi.class);
+        OptionalOptionalStringApi api = fixture.builder().build(OptionalOptionalStringApi.class);
 
         Optional<Optional<String>> greeting = api.greeting();
 
@@ -132,7 +132,7 @@ public class OptionalBehavior {
 
     @Test void shouldCallOptionalOptionalStringQuery() {
         fixture.returnsData("\"greeting\":\"hi\"");
-        OptionalOptionalStringApi api = fixture.buildClient(OptionalOptionalStringApi.class);
+        OptionalOptionalStringApi api = fixture.builder().build(OptionalOptionalStringApi.class);
 
         Optional<Optional<String>> greeting = api.greeting();
 

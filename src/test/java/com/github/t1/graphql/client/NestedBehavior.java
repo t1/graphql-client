@@ -20,7 +20,7 @@ class NestedBehavior {
 
     @Test void shouldCallStringSetQuery() {
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
-        StringSetApi api = fixture.buildClient(StringSetApi.class);
+        StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         Set<String> greetings = api.greetings();
 
@@ -35,7 +35,7 @@ class NestedBehavior {
 
     @Test void shouldCallStringListQuery() {
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
-        StringListApi api = fixture.buildClient(StringListApi.class);
+        StringListApi api = fixture.builder().build(StringListApi.class);
 
         List<String> greetings = api.greetings();
 
@@ -50,7 +50,7 @@ class NestedBehavior {
 
     @Test void shouldCallStringArrayQuery() {
         fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
-        StringArrayApi api = fixture.buildClient(StringArrayApi.class);
+        StringArrayApi api = fixture.builder().build(StringArrayApi.class);
 
         String[] greetings = api.greetings();
 
@@ -71,7 +71,7 @@ class NestedBehavior {
 
     @Test void shouldCallObjectQuery() {
         fixture.returnsData("\"greeting\":{\"text\":\"foo\",\"code\":5}");
-        ObjectApi api = fixture.buildClient(ObjectApi.class);
+        ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         Greeting greeting = api.greeting();
 
@@ -86,7 +86,7 @@ class NestedBehavior {
 
     @Test void shouldCallObjectListQuery() {
         fixture.returnsData("\"greetings\":[{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}]");
-        ObjectListApi api = fixture.buildClient(ObjectListApi.class);
+        ObjectListApi api = fixture.builder().build(ObjectListApi.class);
 
         List<Greeting> greeting = api.greetings();
 
@@ -109,7 +109,7 @@ class NestedBehavior {
 
     @Test void shouldCallNestedStringQuery() {
         fixture.returnsData("\"container\":{\"greeting\":\"hi\",\"count\":5}");
-        StringContainerApi api = fixture.buildClient(StringContainerApi.class);
+        StringContainerApi api = fixture.builder().build(StringContainerApi.class);
 
         StringContainer container = api.container();
 
@@ -130,7 +130,7 @@ class NestedBehavior {
 
     @Test void shouldCallNestedObjectQuery() {
         fixture.returnsData("\"container\":{\"greeting\":{\"text\":\"a\",\"code\":1},\"count\":3}");
-        GreetingContainerApi api = fixture.buildClient(GreetingContainerApi.class);
+        GreetingContainerApi api = fixture.builder().build(GreetingContainerApi.class);
 
         GreetingContainer container = api.container();
 
@@ -156,7 +156,7 @@ class NestedBehavior {
         fixture.returnsData("\"container\":{\"greetings\":[" +
             "{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}" +
             "],\"count\":3}");
-        GreetingsContainerApi api = fixture.buildClient(GreetingsContainerApi.class);
+        GreetingsContainerApi api = fixture.builder().build(GreetingsContainerApi.class);
 
         GreetingsContainer container = api.container();
 
@@ -185,7 +185,7 @@ class NestedBehavior {
         fixture.returnsData("\"container\":{\"greeting\":{" +
             "\"value\":{\"text\":\"a\",\"code\":1}}," +
             "\"count\":3}");
-        WrappedGreetingApi api = fixture.buildClient(WrappedGreetingApi.class);
+        WrappedGreetingApi api = fixture.builder().build(WrappedGreetingApi.class);
 
         WrappedGreetingContainer container = api.container();
 
