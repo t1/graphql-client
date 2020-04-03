@@ -120,16 +120,6 @@ public class OptionalBehavior {
         Optional<Optional<String>> greeting();
     }
 
-    @Test void shouldCallNullOptionalOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":null");
-        OptionalOptionalStringApi api = fixture.builder().build(OptionalOptionalStringApi.class);
-
-        Optional<Optional<String>> greeting = api.greeting();
-
-        then(fixture.query()).isEqualTo("greeting");
-        then(greeting).isEmpty();
-    }
-
     @Test void shouldCallOptionalOptionalStringQuery() {
         fixture.returnsData("\"greeting\":\"hi\"");
         OptionalOptionalStringApi api = fixture.builder().build(OptionalOptionalStringApi.class);

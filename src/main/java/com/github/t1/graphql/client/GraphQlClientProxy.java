@@ -13,7 +13,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,7 +33,6 @@ class GraphQlClientProxy {
 
     private final WebTarget target;
     private final List<GraphQlClientHeader> headers;
-    private final Jsonb jsonb;
 
     Object invoke(MethodInfo method) {
         String request = request(method);
@@ -75,12 +73,12 @@ class GraphQlClientProxy {
     }
 
     private String fields(TypeInfo type) {
-        while (type.isWrapped())
-            type = type.itemType();
+        while (type.isOptional())
+            type = type.getItemType();
         if (type.isScalar()) {
             return "";
         } else if (type.isCollection()) {
-            return fields(type.itemType());
+            return fields(type.getItemType());
         } else {
             return type.fields()
                 .map(this::field)
@@ -90,7 +88,7 @@ class GraphQlClientProxy {
 
     private String field(FieldInfo field) {
         TypeInfo type = field.getType();
-        if (type.isScalar() || type.isCollection() && type.itemType().isScalar()) {
+        if (type.isScalar() || type.isCollection() && type.getItemType().isScalar()) {
             return field.getName();
         } else {
             return field.getName() + fields(type);
@@ -125,6 +123,6 @@ class GraphQlClientProxy {
         if (!data.containsKey(method.getName()))
             throw new GraphQlClientException("no data for '" + method.getName() + "':\n  " + data);
         JsonValue value = data.get(method.getName());
-        return jsonb.fromJson(value.toString(), method.getReturnType().getNativeType());
+        return method.getReturnType().fromJson(value);
     }
 }

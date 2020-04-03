@@ -187,7 +187,18 @@ class ScalarApiBehavior {
         BigInteger foo();
     }
 
-    @Test void shouldCallScalarWithStringConstructorApiQuery() {
+    @Test void shouldCallNotSoBigIntegerScalarWithStringConstructorApiQuery() {
+        String bigNumber = "1234";
+        fixture.returnsData("\"foo\":" + bigNumber);
+        ScalarWithStringConstructorApi api = fixture.builder().build(ScalarWithStringConstructorApi.class);
+
+        BigInteger value = api.foo();
+
+        then(fixture.query()).isEqualTo("foo");
+        then(value).isEqualTo(bigNumber);
+    }
+
+    @Test void shouldCallVeryBigIntegerScalarWithStringConstructorApiQuery() {
         String bigNumber = "1234567890123456789012345678901234567890123456789012345678901234567890";
         fixture.returnsData("\"foo\":" + bigNumber);
         ScalarWithStringConstructorApi api = fixture.builder().build(ScalarWithStringConstructorApi.class);

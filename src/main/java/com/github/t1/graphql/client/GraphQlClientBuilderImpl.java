@@ -6,8 +6,6 @@ import com.github.t1.graphql.client.api.GraphQlClientHeader;
 import com.github.t1.graphql.client.reflection.MethodInfo;
 import org.eclipse.microprofile.config.ConfigProvider;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -21,7 +19,6 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
     private Client client = DEFAULT_CLIENT;
     private URI endpoint;
     private final List<GraphQlClientHeader> headers = new ArrayList<>();
-    private Jsonb jsonb = DEFAULT_JSONB;
 
     @Override public GraphQlClientBuilder header(GraphQlClientHeader header) {
         headers.add(header);
@@ -38,11 +35,6 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
         return this;
     }
 
-    @Override public GraphQlClientBuilder jsonb(Jsonb jsonb) {
-        this.jsonb = jsonb;
-        return this;
-    }
-
     @Override public GraphQlClientBuilder configKey(String configKey) {
         this.configKey = configKey;
         return this;
@@ -52,7 +44,7 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
         readConfig(apiClass.getAnnotation(GraphQlClientApi.class));
 
         WebTarget webTarget = client.target(resolveEndpoint(apiClass));
-        GraphQlClientProxy graphQlClient = new GraphQlClientProxy(webTarget, headers, jsonb);
+        GraphQlClientProxy graphQlClient = new GraphQlClientProxy(webTarget, headers);
         return apiClass.cast(Proxy.newProxyInstance(apiClass.getClassLoader(), new Class<?>[]{apiClass},
             (proxy, method, args) -> graphQlClient.invoke(MethodInfo.of(method, args))));
     }
@@ -77,6 +69,4 @@ public class GraphQlClientBuilderImpl implements GraphQlClientBuilder {
     }
 
     private static final Client DEFAULT_CLIENT = ClientBuilder.newClient();
-
-    private static final Jsonb DEFAULT_JSONB = JsonbBuilder.create();
 }
