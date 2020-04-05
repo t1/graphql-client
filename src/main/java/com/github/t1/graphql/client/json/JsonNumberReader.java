@@ -26,8 +26,6 @@ class JsonNumberReader implements Supplier<Object> {
         for (SubReader sub : SUB_READERS)
             if (sub.matches())
                 return sub.read();
-        if (int.class.equals(type.getRawType()) || Integer.class.equals(type.getRawType()))
-            return value.intValueExact();
         if (long.class.equals(type.getRawType()) || Long.class.equals(type.getRawType()))
             return value.longValueExact();
         if (float.class.equals(type.getRawType()) || Float.class.equals(type.getRawType()))
@@ -42,20 +40,21 @@ class JsonNumberReader implements Supplier<Object> {
     }
 
     private final List<SubReader> SUB_READERS = asList(
-        new SubReader(Byte.class, i -> (byte) (int) i),
-        new SubReader(char.class, Character.class, Character.MIN_VALUE, Character.MAX_VALUE, i -> (char) (int) i),
-        new SubReader(Short.class, i -> (short) (int) i)
+        new SubReader(Byte.class, i -> (byte) (long) i),
+        new SubReader(char.class, Character.class, Character.MIN_VALUE, Character.MAX_VALUE, i -> (char) (long) i),
+        new SubReader(Short.class, i -> (short) (long) i),
+        new SubReader(Integer.class, i -> (int) (long) i)
     );
 
     @RequiredArgsConstructor
     private class SubReader {
         private final Class<?> type;
         private final Class<?> primitive;
-        private final int minValue;
-        private final int maxValue;
-        private final Function<Integer, Object> cast;
+        private final long minValue;
+        private final long maxValue;
+        private final Function<Long, Object> cast;
 
-        public SubReader(Class<?> type, Function<Integer, Object> cast) {
+        public SubReader(Class<?> type, Function<Long, Object> cast) {
             this(type,
                 readConstant(type, "TYPE"),
                 readNumberConstant(type, "MIN_VALUE"),
@@ -68,16 +67,15 @@ class JsonNumberReader implements Supplier<Object> {
         }
 
         public Object read() {
-            int intValue = value.intValue();
-            check(intValue >= minValue);
-            check(intValue <= maxValue);
-            return cast.apply(intValue);
+            long value = JsonNumberReader.this.value.longValue();
+            check(value >= minValue);
+            check(value <= maxValue);
+            return cast.apply(value);
         }
-
     }
 
-    private static int readNumberConstant(Class<?> type, String fieldName) {
-        return JsonNumberReader.<Number>readConstant(type, fieldName).intValue();
+    private static long readNumberConstant(Class<?> type, String fieldName) {
+        return JsonNumberReader.<Number>readConstant(type, fieldName).longValue();
     }
 
     @SneakyThrows(ReflectiveOperationException.class)

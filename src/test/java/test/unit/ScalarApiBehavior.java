@@ -86,7 +86,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for java.lang.Byte " +
                 "in " + ByteApi.class.getName() + " field code: " + tooBig);
         }
@@ -98,7 +97,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for java.lang.Byte " +
                 "in " + ByteApi.class.getName() + " field code: " + tooSmall);
         }
@@ -130,7 +128,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for java.lang.Character field code: 'ab'");
         }
 
@@ -151,7 +148,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for java.lang.Character " +
                 "in " + CharacterApi.class.getName() + " field code: " + tooBig);
         }
@@ -162,7 +158,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for java.lang.Character " +
                 "in " + CharacterApi.class.getName() + " field code: -15");
         }
@@ -184,7 +179,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("code");
             then(thrown).hasMessage("invalid value for char field code: 'ab'");
         }
     }
@@ -259,6 +253,26 @@ class ScalarApiBehavior {
 
             then(fixture.query()).isEqualTo("code");
             then(code).isEqualTo(5);
+        }
+
+        @Test void shouldFailToCallTooSmallIntegerQuery() {
+            long tooSmall = (long) Integer.MIN_VALUE - 1;
+            fixture.returnsData("\"code\":" + tooSmall);
+            IntegerApi api = fixture.builder().build(IntegerApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Integer in test.unit.ScalarApiBehavior$IntegerApi field code: " + tooSmall);
+        }
+
+        @Test void shouldFailToCallTooBigIntegerQuery() {
+            long tooBig = (long) Integer.MAX_VALUE + 1;
+            fixture.returnsData("\"code\":" + tooBig);
+            IntegerApi api = fixture.builder().build(IntegerApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Integer in test.unit.ScalarApiBehavior$IntegerApi field code: " + tooBig);
         }
 
 
@@ -432,7 +446,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("greeting");
             then(thrown).hasMessage("expected successful status code but got 500 Internal Server Error:\n" +
                 "failed");
         }
@@ -443,7 +456,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("greeting");
             then(thrown).hasMessage("errors from service: [{\"message\":\"failed\"}]:\n" +
                 "  {\"query\":\"{ greeting }\"}");
         }
@@ -454,7 +466,6 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
-            then(fixture.query()).isEqualTo("greeting");
             then(thrown).hasMessage("no data for 'greeting':\n  {}");
         }
 
