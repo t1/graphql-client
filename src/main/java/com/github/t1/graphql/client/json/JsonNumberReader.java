@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client.json;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,8 @@ class JsonNumberReader implements Supplier<Object> {
     @Override public Object get() {
         if (byte.class.equals(type.getRawType()) || Byte.class.equals(type.getRawType()))
             return (byte) value.intValue();
+        if (char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType()))
+            return (char) value.intValue();
         if (short.class.equals(type.getRawType()) || Short.class.equals(type.getRawType()))
             return (short) value.intValue();
         if (int.class.equals(type.getRawType()) || Integer.class.equals(type.getRawType()))
@@ -32,6 +35,6 @@ class JsonNumberReader implements Supplier<Object> {
             return value.bigIntegerValueExact();
         if (BigDecimal.class.equals(type.getRawType()))
             return value.bigDecimalValue();
-        return null;
+        throw new GraphQlClientException("can't map number '" + value + "' to " + type);
     }
 }

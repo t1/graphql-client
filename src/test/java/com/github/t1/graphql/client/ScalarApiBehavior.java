@@ -257,7 +257,7 @@ class ScalarApiBehavior {
         Character c();
     }
 
-    @Test void shouldCallCharacterQuery() {
+    @Test void shouldCallCharacterFromStringQuery() {
         fixture.returnsData("\"c\":\"a\"");
         CharacterApi api = fixture.builder().build(CharacterApi.class);
 
@@ -267,7 +267,7 @@ class ScalarApiBehavior {
         then(c).isEqualTo('a');
     }
 
-    @Test void shouldFailCharacterQueryWithMoreThanOneCharacter() {
+    @Test void shouldFailCharacterFromStringQueryWithMoreThanOneCharacter() {
         fixture.returnsData("\"c\":\"ab\"");
         CharacterApi api = fixture.builder().build(CharacterApi.class);
 
@@ -275,6 +275,16 @@ class ScalarApiBehavior {
 
         then(fixture.query()).isEqualTo("c");
         then(thrown).hasMessage("invalid value for java.lang.Character field c: 'ab'");
+    }
+
+    @Test void shouldCallCharacterFromNumberQuery() {
+        fixture.returnsData("\"c\":97");
+        CharacterApi api = fixture.builder().build(CharacterApi.class);
+
+        Character c = api.c();
+
+        then(fixture.query()).isEqualTo("c");
+        then(c).isEqualTo('a');
     }
 
 
