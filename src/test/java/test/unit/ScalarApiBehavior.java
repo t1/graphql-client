@@ -307,6 +307,26 @@ class ScalarApiBehavior {
             then(code).isEqualTo(5L);
         }
 
+        @Test void shouldFailToCallTooSmallLongQuery() {
+            String tooSmall = "-9223372036854775809";
+            fixture.returnsData("\"code\":" + tooSmall);
+            LongApi api = fixture.builder().build(LongApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Long in test.unit.ScalarApiBehavior$LongApi field code: " + tooSmall);
+        }
+
+        @Test void shouldFailToCallTooBigLongQuery() {
+            String tooBig = "9223372036854775808";
+            fixture.returnsData("\"code\":" + tooBig);
+            LongApi api = fixture.builder().build(LongApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Long in test.unit.ScalarApiBehavior$LongApi field code: " + tooBig);
+        }
+
 
         @Test void shouldCallPrimitiveLongQuery() {
             fixture.returnsData("\"code\":5");
