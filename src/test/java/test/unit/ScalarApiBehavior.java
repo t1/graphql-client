@@ -209,6 +209,26 @@ class ScalarApiBehavior {
             then(code).isEqualTo((short) 5);
         }
 
+        @Test void shouldFailToCallTooSmallShortQuery() {
+            int tooSmall = (int) Short.MIN_VALUE - 1;
+            fixture.returnsData("\"code\":" + tooSmall);
+            ShortApi api = fixture.builder().build(ShortApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Short in test.unit.ScalarApiBehavior$ShortApi field code: " + tooSmall);
+        }
+
+        @Test void shouldFailToCallTooBigShortQuery() {
+            int tooBig = (int) Short.MAX_VALUE + 1;
+            fixture.returnsData("\"code\":" + tooBig);
+            ShortApi api = fixture.builder().build(ShortApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid value for java.lang.Short in test.unit.ScalarApiBehavior$ShortApi field code: " + tooBig);
+        }
+
 
         @Test void shouldCallPrimitiveShortQuery() {
             fixture.returnsData("\"code\":5");
