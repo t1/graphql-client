@@ -287,6 +287,29 @@ class ScalarApiBehavior {
         then(c).isEqualTo('a');
     }
 
+    @Test void shouldFailCharacterFromTooBigNumberQuery() {
+        int tooBig = (int) Character.MAX_VALUE + 1;
+        fixture.returnsData("\"c\":" + tooBig);
+        CharacterApi api = fixture.builder().build(CharacterApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::c, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("c");
+        then(thrown).hasMessage("invalid value for java.lang.Character " +
+            "in " + CharacterApi.class.getName() + " field c: " + tooBig);
+    }
+
+    @Test void shouldFailCharacterFromNegativeNumberQuery() {
+        fixture.returnsData("\"c\":-15");
+        CharacterApi api = fixture.builder().build(CharacterApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::c, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("c");
+        then(thrown).hasMessage("invalid value for java.lang.Character " +
+            "in " + CharacterApi.class.getName() + " field c: -15");
+    }
+
 
     interface PrimitiveCharApi {
         char c();

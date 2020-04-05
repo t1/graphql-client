@@ -19,8 +19,9 @@ class JsonNumberReader implements Supplier<Object> {
     @Override public Object get() {
         if (byte.class.equals(type.getRawType()) || Byte.class.equals(type.getRawType()))
             return (byte) value.intValue();
-        if (char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType()))
-            return (char) value.intValue();
+        CharacterReader reader = new CharacterReader();
+        if (reader.matches())
+            return reader.read();
         if (short.class.equals(type.getRawType()) || Short.class.equals(type.getRawType()))
             return (short) value.intValue();
         if (int.class.equals(type.getRawType()) || Integer.class.equals(type.getRawType()))
@@ -36,5 +37,22 @@ class JsonNumberReader implements Supplier<Object> {
         if (BigDecimal.class.equals(type.getRawType()))
             return value.bigDecimalValue();
         throw new GraphQlClientException("can't map number '" + value + "' to " + type);
+    }
+
+    private class CharacterReader {
+        public boolean matches() {
+            return char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType());
+        }
+
+        public Object read() {
+            int intValue = value.intValue();
+            if (intValue < Character.MIN_VALUE)
+                throw new GraphQlClientException("invalid value for " + type + " field "
+                    + "c"/* TODO field name */ + ": " + value);
+            if (intValue > Character.MAX_VALUE)
+                throw new GraphQlClientException("invalid value for " + type + " field "
+                    + "c"/* TODO field name */ + ": " + value);
+            return (char) intValue;
+        }
     }
 }

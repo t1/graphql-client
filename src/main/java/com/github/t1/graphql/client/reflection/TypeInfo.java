@@ -57,7 +57,10 @@ public class TypeInfo {
     }
 
 
-    @Override public String toString() { return type + ((container == null) ? "" : " in " + container); }
+    @Override public String toString() {
+        return ((type instanceof Class) ? ((Class<?>) type).getName() : type)
+            + ((container == null) ? "" : " in " + container);
+    }
 
     public boolean isCollection() {
         return ifClass(Class::isArray)
