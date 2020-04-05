@@ -17,8 +17,9 @@ class JsonNumberReader implements Supplier<Object> {
     private final JsonNumber value;
 
     @Override public Object get() {
-        if (byte.class.equals(type.getRawType()) || Byte.class.equals(type.getRawType()))
-            return (byte) value.intValue();
+        ByteReader byteReader = new ByteReader();
+        if (byteReader.matches())
+            return byteReader.read();
         CharacterReader reader = new CharacterReader();
         if (reader.matches())
             return reader.read();
@@ -39,6 +40,23 @@ class JsonNumberReader implements Supplier<Object> {
         throw new GraphQlClientException("can't map number '" + value + "' to " + type);
     }
 
+    private class ByteReader {
+        public boolean matches() {
+            return byte.class.equals(type.getRawType()) || Byte.class.equals(type.getRawType());
+        }
+
+        public Object read() {
+            int intValue = value.intValue();
+            if (intValue < Byte.MIN_VALUE)
+                throw new GraphQlClientException("invalid value for " + type + " field "
+                    + "code"/* TODO field name */ + ": " + value);
+            if (intValue > Byte.MAX_VALUE)
+                throw new GraphQlClientException("invalid value for " + type + " field "
+                    + "code"/* TODO field name */ + ": " + value);
+            return (byte) intValue;
+        }
+    }
+
     private class CharacterReader {
         public boolean matches() {
             return char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType());
@@ -48,10 +66,10 @@ class JsonNumberReader implements Supplier<Object> {
             int intValue = value.intValue();
             if (intValue < Character.MIN_VALUE)
                 throw new GraphQlClientException("invalid value for " + type + " field "
-                    + "c"/* TODO field name */ + ": " + value);
+                    + "code"/* TODO field name */ + ": " + value);
             if (intValue > Character.MAX_VALUE)
                 throw new GraphQlClientException("invalid value for " + type + " field "
-                    + "c"/* TODO field name */ + ": " + value);
+                    + "code"/* TODO field name */ + ": " + value);
             return (char) intValue;
         }
     }

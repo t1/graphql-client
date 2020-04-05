@@ -21,7 +21,7 @@ class JsonStringReader implements Supplier<Object> {
         if (char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType())) {
             if (value.getChars().length() != 1)
                 throw new GraphQlClientException("invalid value for " + type.getRawType().getName()
-                    + " field " + "c" /* TODO field name */ + ": '" + value.getString() + "'");
+                    + " field " + "code" /* TODO field name */ + ": '" + value.getString() + "'");
             return value.getChars().charAt(0);
         }
         if (String.class.equals(type.getRawType()))

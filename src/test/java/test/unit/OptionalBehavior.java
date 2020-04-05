@@ -1,7 +1,7 @@
-package com.github.t1.graphql.client;
+package test.unit;
 
-import com.github.t1.graphql.client.NestedBehavior.Greeting;
 import org.junit.jupiter.api.Test;
+import test.unit.NestedBehavior.Greeting;
 
 import java.util.List;
 import java.util.Optional;

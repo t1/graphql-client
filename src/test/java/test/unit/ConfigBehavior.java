@@ -1,4 +1,4 @@
-package com.github.t1.graphql.client;
+package test.unit;
 
 import com.github.t1.graphql.client.api.GraphQlClientApi;
 import org.junit.jupiter.api.Test;
