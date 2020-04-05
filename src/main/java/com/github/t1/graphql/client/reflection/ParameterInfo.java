@@ -1,14 +1,12 @@
 package com.github.t1.graphql.client.reflection;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.graphql.Name;
 
 import java.lang.reflect.Parameter;
 
-@EqualsAndHashCode
 @RequiredArgsConstructor
 public class ParameterInfo {
     private final MethodInfo method;

@@ -2,7 +2,9 @@ package com.github.t1.graphql.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -193,4 +195,38 @@ class NestedBehavior {
         then(container).isEqualTo(new WrappedGreetingContainer(
             new Wrapper<>(new Greeting("a", 1)), 3));
     }
+
+
+    interface ClassWithTransientAndStaticFieldsApi {
+        ClassWithTransientAndStaticFields foo();
+    }
+
+    @SuppressWarnings({"unused"})
+    @NoArgsConstructor @ToString @EqualsAndHashCode
+    public static class ClassWithTransientAndStaticFields {
+        public static final String TO_BE_IGNORED = "foo";
+        private static final String ALSO_TO_BE_IGNORED = "bar";
+        private transient boolean ignoreMe;
+
+        String text;
+        int code;
+
+        public ClassWithTransientAndStaticFields(String text, int code) {
+            this.text = text;
+            this.code = code;
+        }
+    }
+
+    @Test void shouldCallObjectQueryWithSpecialFields() {
+        fixture.returnsData("\"foo\":{\"text\":\"foo\",\"code\":5,\"ignoreMe\":true}");
+        ClassWithTransientAndStaticFieldsApi api = fixture.builder().build(ClassWithTransientAndStaticFieldsApi.class);
+
+        ClassWithTransientAndStaticFields foo = api.foo();
+
+        then(fixture.query()).isEqualTo("foo {text code}");
+        then(foo).isEqualTo(new ClassWithTransientAndStaticFields("foo", 5));
+        then(foo.ignoreMe).isFalse();
+    }
+
+    // TODO map, set, inherited fields
 }

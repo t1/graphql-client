@@ -1,7 +1,6 @@
 package com.github.t1.graphql.client.reflection;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.graphql.Name;
 
@@ -9,7 +8,6 @@ import java.lang.reflect.Field;
 
 import static lombok.AccessLevel.PACKAGE;
 
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = PACKAGE)
 public class FieldInfo {
     private final TypeInfo container;
@@ -27,7 +25,7 @@ public class FieldInfo {
         return field.getName();
     }
 
-    void set(Object instance, Object value) {
+    public void set(Object instance, Object value) {
         try {
             field.setAccessible(true);
             field.set(instance, value);

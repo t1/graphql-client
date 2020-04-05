@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.List;
 
 import static com.github.t1.graphql.client.CollectionUtils.toMultivaluedMap;
+import static com.github.t1.graphql.client.json.JsonReader.readJson;
 import static java.util.stream.Collectors.joining;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
@@ -123,6 +124,6 @@ class GraphQlClientProxy {
         if (!data.containsKey(method.getName()))
             throw new GraphQlClientException("no data for '" + method.getName() + "':\n  " + data);
         JsonValue value = data.get(method.getName());
-        return method.getReturnType().fromJson(value);
+        return readJson(method.getReturnType(), value);
     }
 }

@@ -4,6 +4,7 @@ import com.github.t1.graphql.client.api.GraphQlClientException;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
@@ -13,36 +14,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 class ScalarApiBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
-
-
-    interface IntegerApi {
-        Integer code();
-    }
-
-    @Test void shouldCallIntegerQuery() {
-        fixture.returnsData("\"code\":5");
-        IntegerApi api = fixture.builder().build(IntegerApi.class);
-
-        Integer code = api.code();
-
-        then(fixture.query()).isEqualTo("code");
-        then(code).isEqualTo(5);
-    }
-
-
-    interface IntApi {
-        int code();
-    }
-
-    @Test void shouldCallIntQuery() {
-        fixture.returnsData("\"code\":5");
-        IntApi api = fixture.builder().build(IntApi.class);
-
-        int code = api.code();
-
-        then(fixture.query()).isEqualTo("code");
-        then(code).isEqualTo(5);
-    }
 
 
     interface BoolApi {
@@ -75,18 +46,180 @@ class ScalarApiBehavior {
     }
 
 
-    interface DoubleApi {
-        Double number();
+    interface ByteApi {
+        Byte code();
     }
 
-    @Test void shouldCallDoubleQuery() {
-        fixture.returnsData("\"number\":123.456");
-        DoubleApi api = fixture.builder().build(DoubleApi.class);
+    @Test void shouldCallByteQuery() {
+        fixture.returnsData("\"code\":5");
+        ByteApi api = fixture.builder().build(ByteApi.class);
 
-        Double number = api.number();
+        Byte code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo((byte) 5);
+    }
+
+
+    interface PrimitiveByteApi {
+        byte code();
+    }
+
+    @Test void shouldCallPrimitiveByteQuery() {
+        fixture.returnsData("\"code\":5");
+        PrimitiveByteApi api = fixture.builder().build(PrimitiveByteApi.class);
+
+        byte code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo((byte) 5);
+    }
+
+
+    interface ShortApi {
+        Short code();
+    }
+
+    @Test void shouldCallShortQuery() {
+        fixture.returnsData("\"code\":5");
+        ShortApi api = fixture.builder().build(ShortApi.class);
+
+        Short code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo((short) 5);
+    }
+
+
+    interface PrimitiveShortApi {
+        short code();
+    }
+
+    @Test void shouldCallPrimitiveShortQuery() {
+        fixture.returnsData("\"code\":5");
+        PrimitiveShortApi api = fixture.builder().build(PrimitiveShortApi.class);
+
+        short code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo((short) 5);
+    }
+
+
+    interface IntegerApi {
+        Integer code();
+    }
+
+    @Test void shouldCallIntegerQuery() {
+        fixture.returnsData("\"code\":5");
+        IntegerApi api = fixture.builder().build(IntegerApi.class);
+
+        Integer code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo(5);
+    }
+
+
+    interface IntApi {
+        int code();
+    }
+
+    @Test void shouldCallIntQuery() {
+        fixture.returnsData("\"code\":5");
+        IntApi api = fixture.builder().build(IntApi.class);
+
+        int code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo(5);
+    }
+
+
+    interface LongApi {
+        Long code();
+    }
+
+    @Test void shouldCallLongQuery() {
+        fixture.returnsData("\"code\":5");
+        LongApi api = fixture.builder().build(LongApi.class);
+
+        Long code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo(5L);
+    }
+
+
+    interface PrimitiveLongApi {
+        long code();
+    }
+
+    @Test void shouldCallPrimitiveLongQuery() {
+        fixture.returnsData("\"code\":5");
+        PrimitiveLongApi api = fixture.builder().build(PrimitiveLongApi.class);
+
+        long code = api.code();
+
+        then(fixture.query()).isEqualTo("code");
+        then(code).isEqualTo(5L);
+    }
+
+
+    interface FloatApi {
+        Float number();
+    }
+
+    @Test void shouldCallFloatQuery() {
+        fixture.returnsData("\"number\":123.456");
+        FloatApi api = fixture.builder().build(FloatApi.class);
+
+        Float number = api.number();
 
         then(fixture.query()).isEqualTo("number");
-        then(number).isEqualTo(123.456D);
+        then(number).isEqualTo(123.456f);
+    }
+
+
+    interface PrimitiveFloatApi {
+        float number();
+    }
+
+    @Test void shouldCallPrimitiveFloatQuery() {
+        fixture.returnsData("\"number\":123.456");
+        PrimitiveFloatApi api = fixture.builder().build(PrimitiveFloatApi.class);
+
+        float number = api.number();
+
+        then(fixture.query()).isEqualTo("number");
+        then(number).isEqualTo(123.456f);
+    }
+
+
+    interface BigDecimalApi {
+        BigDecimal number();
+    }
+
+    @Test void shouldCallReallyLongDecimalQuery() {
+        String reallyLongDecimal = "123.45678901234567890123456789012345678901234567890123456789012345678901234567890";
+        fixture.returnsData("\"number\":" + reallyLongDecimal);
+        BigDecimalApi api = fixture.builder().build(BigDecimalApi.class);
+
+        BigDecimal number = api.number();
+
+        then(fixture.query()).isEqualTo("number");
+        then(number).isEqualTo(reallyLongDecimal);
+    }
+
+    @Test void shouldCallNotSoLongDecimalQuery() {
+        String notSoLongDecimal = "123.456";
+        fixture.returnsData("\"number\":\"" + notSoLongDecimal + "\"");
+        BigDecimalApi api = fixture.builder().build(BigDecimalApi.class);
+
+        BigDecimal number = api.number();
+
+        then(fixture.query()).isEqualTo("number");
+        then(number).isEqualTo(notSoLongDecimal);
     }
 
 
@@ -102,6 +235,71 @@ class ScalarApiBehavior {
 
         then(fixture.query()).isEqualTo("number");
         then(number).isEqualTo(123.456D);
+    }
+
+
+    interface DoubleApi {
+        Double number();
+    }
+
+    @Test void shouldCallDoubleQuery() {
+        fixture.returnsData("\"number\":123.456");
+        DoubleApi api = fixture.builder().build(DoubleApi.class);
+
+        Double number = api.number();
+
+        then(fixture.query()).isEqualTo("number");
+        then(number).isEqualTo(123.456D);
+    }
+
+
+    interface CharacterApi {
+        Character c();
+    }
+
+    @Test void shouldCallCharacterQuery() {
+        fixture.returnsData("\"c\":\"a\"");
+        CharacterApi api = fixture.builder().build(CharacterApi.class);
+
+        Character c = api.c();
+
+        then(fixture.query()).isEqualTo("c");
+        then(c).isEqualTo('a');
+    }
+
+    @Test void shouldFailCharacterQueryWithMoreThanOneCharacter() {
+        fixture.returnsData("\"c\":\"ab\"");
+        CharacterApi api = fixture.builder().build(CharacterApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::c, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("c");
+        then(thrown).hasMessage("invalid value for java.lang.Character field c: 'ab'");
+    }
+
+
+    interface PrimitiveCharApi {
+        char c();
+    }
+
+    @Test void shouldCallPrimitiveCharQuery() {
+        fixture.returnsData("\"c\":\"a\"");
+        PrimitiveCharApi api = fixture.builder().build(PrimitiveCharApi.class);
+
+        char c = api.c();
+
+        then(fixture.query()).isEqualTo("c");
+        then(c).isEqualTo('a');
+    }
+
+    @Test void shouldFailPrimitiveCharQueryWithMoreThanOneCharacter() {
+        fixture.returnsData("\"c\":\"ab\"");
+        PrimitiveCharApi api = fixture.builder().build(PrimitiveCharApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::c, GraphQlClientException.class);
+
+        then(fixture.query()).isEqualTo("c");
+        then(thrown).hasMessage("invalid value for char field c: 'ab'");
     }
 
 
@@ -208,4 +406,7 @@ class ScalarApiBehavior {
         then(fixture.query()).isEqualTo("foo");
         then(value).isEqualTo(bigNumber);
     }
+
+    // TODO char/Character from number
+    // TODO many invalid value tests
 }

@@ -1,17 +1,10 @@
 package com.github.t1.graphql.client.reflection;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,26 +12,15 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-import static com.github.t1.graphql.client.CollectionUtils.toArray;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.lang.reflect.Modifier.isTransient;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static javax.json.JsonValue.ValueType.NULL;
 import static lombok.AccessLevel.PACKAGE;
 
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = PACKAGE)
 public class TypeInfo {
     private final TypeInfo container;
@@ -99,21 +81,18 @@ public class TypeInfo {
     }
 
     public boolean isScalar() {
-        return PRIMITIVE_SCALAR_TYPES.contains(type) || isEnum() || scalarConstructor().isPresent();
+        return getRawType().isPrimitive()
+            || Character.class.equals(getRawType()) // has a valueOf(char), not valueOf(String)
+            || CharSequence.class.isAssignableFrom(getRawType())
+            || isEnum()
+            || scalarConstructor().isPresent();
     }
 
-    private static final List<Type> PRIMITIVE_SCALAR_TYPES = asList(
-        int.class,
-        double.class, // = Float in GraphQL speech
-        String.class, // includes ID
-        boolean.class
-    );
-
-    private boolean isEnum() {
+    public boolean isEnum() {
         return ifClass(Class::isEnum);
     }
 
-    private Optional<Executable> scalarConstructor() {
+    public Optional<Executable> scalarConstructor() {
         return Stream.concat(
             Stream.of(getRawType().getConstructors()).filter(this::hasOneStringParameter),
             Stream.of(getRawType().getMethods()).filter(this::isStaticStringConstructor)
@@ -130,90 +109,9 @@ public class TypeInfo {
     }
 
     private boolean isStaticConstructorMethodNamed(Method method, String name) {
-        return method.getName().equals(name) && Modifier.isStatic(method.getModifiers())
+        return method.getName().equals(name)
+            && Modifier.isStatic(method.getModifiers())
             && method.getReturnType().equals(type)
             && hasOneStringParameter(method);
-    }
-
-    public Object fromJson(JsonValue in) {
-        if (isOptional())
-            return Optional.ofNullable(getItemType().fromJson(in));
-        if (in.getValueType() == NULL)
-            return null;
-        if (isScalar())
-            return fromScalar(in);
-        if (isCollection())
-            return fromCollection((JsonArray) in);
-        return fromObject((JsonObject) in);
-    }
-
-    private Object fromScalar(JsonValue in) {
-        if (int.class.equals(type) || Integer.class.equals(type))
-            return ((JsonNumber) in).intValue();
-        if (BigInteger.class.equals(type))
-            return ((JsonNumber) in).bigIntegerValueExact();
-        if (BigDecimal.class.equals(type))
-            return ((JsonNumber) in).bigDecimalValue();
-        if (boolean.class.equals(type) || Boolean.class.equals(type))
-            switch (in.getValueType()) {
-                case TRUE:
-                    return true;
-                case FALSE:
-                    return false;
-                default:
-                    throw new GraphQlClientException("expected JSON boolean but found " + in.getValueType());
-            }
-        if (double.class.equals(type) || Double.class.equals(type))
-            return ((JsonNumber) in).doubleValue();
-        if (String.class.equals(type))
-            return ((JsonString) in).getString();
-        if (isEnum())
-            //noinspection rawtypes,unchecked
-            return Enum.valueOf((Class) getRawType(), ((JsonString) in).getString());
-        // ifClass(Class::isEnum)
-        Executable executable = scalarConstructor().orElseThrow(() -> new GraphQlClientException("expected a scalar constructor on " + type));
-        return execute(executable, ((JsonString) in).getString());
-    }
-
-    private Object execute(Executable executable, String string) {
-        try {
-            if (executable instanceof Method) {
-                return ((Method) executable).invoke(null, string);
-            } else {
-                return ((Constructor<?>) executable).newInstance(string);
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new GraphQlClientException("can't create " + type, e);
-        }
-    }
-
-    private Object fromCollection(JsonArray in) {
-        return in.stream().map(getItemType()::fromJson).collect(collector());
-    }
-
-    private Collector<Object, ?, ?> collector() {
-        if (getRawType().isArray()) {
-            @SuppressWarnings("unchecked")
-            Class<Object> rawItemType = (Class<Object>) getItemType().getRawType();
-            return toArray(rawItemType);
-        }
-        if (Set.class.isAssignableFrom(getRawType()))
-            return toSet();
-        assert List.class.isAssignableFrom(getRawType());
-        return toList();
-    }
-
-    private Object fromObject(JsonObject in) {
-        try {
-            Object instance = getRawType().getConstructor().newInstance();
-            fields().forEach(field -> {
-                JsonValue jsonFieldValue = in.get(field.getName());
-                Object javaFieldValue = field.getType().fromJson(jsonFieldValue);
-                field.set(instance, javaFieldValue);
-            });
-            return instance;
-        } catch (ReflectiveOperationException e) {
-            throw new GraphQlClientException("can't create " + type, e);
-        }
     }
 }
