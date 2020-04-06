@@ -33,6 +33,42 @@ class NestedBehavior {
         then(greetings).containsExactly("a", "b");
     }
 
+    @Test void shouldFailToAssignStringToSet() {
+        fixture.returnsData("\"greetings\":\"a\"");
+        StringSetApi api = fixture.builder().build(StringSetApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.util.Set<java.lang.String> value for " + StringSetApi.class.getName() + "#greetings: \"a\"");
+    }
+
+    @Test void shouldFailToAssignNumberToSet() {
+        fixture.returnsData("\"greetings\":12345");
+        StringSetApi api = fixture.builder().build(StringSetApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.util.Set<java.lang.String> value for " + StringSetApi.class.getName() + "#greetings: 12345");
+    }
+
+    @Test void shouldFailToAssignBooleanToSet() {
+        fixture.returnsData("\"greetings\":true");
+        StringSetApi api = fixture.builder().build(StringSetApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.util.Set<java.lang.String> value for " + StringSetApi.class.getName() + "#greetings: true");
+    }
+
+    @Test void shouldFailToAssignObjectToSet() {
+        fixture.returnsData("\"greetings\":{\"foo\":\"bar\"}");
+        StringSetApi api = fixture.builder().build(StringSetApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.util.Set<java.lang.String> value for " + StringSetApi.class.getName() + "#greetings: {\"foo\":\"bar\"}");
+    }
+
 
     interface StringListApi {
         List<String> greetings();
@@ -84,6 +120,33 @@ class NestedBehavior {
         then(greeting).isEqualTo(new Greeting("foo", 5));
     }
 
+    @Test void shouldFailToAssignStringToObject() {
+        fixture.returnsData("\"greeting\":\"a\"");
+        ObjectApi api = fixture.builder().build(ObjectApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid " + Greeting.class.getName() + " value for " + ObjectApi.class.getName() + "#greeting: \"a\"");
+    }
+
+    @Test void shouldFailToAssignNumberToObject() {
+        fixture.returnsData("\"greeting\":12.34");
+        ObjectApi api = fixture.builder().build(ObjectApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid " + Greeting.class.getName() + " value for " + ObjectApi.class.getName() + "#greeting: 12.34");
+    }
+
+    @Test void shouldFailToAssignBooleanToObject() {
+        fixture.returnsData("\"greeting\":false");
+        ObjectApi api = fixture.builder().build(ObjectApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid " + Greeting.class.getName() + " value for " + ObjectApi.class.getName() + "#greeting: false");
+    }
+
 
     interface ObjectListApi {
         List<Greeting> greetings();
@@ -99,6 +162,24 @@ class NestedBehavior {
         then(greeting).containsExactly(
             new Greeting("a", 1),
             new Greeting("b", 2));
+    }
+
+    @Test void shouldFailToAssignStringToObjectListQuery() {
+        fixture.returnsData("\"greetings\":[{\"text\":\"a\",\"code\":1},123456]");
+        ObjectListApi api = fixture.builder().build(ObjectListApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid " + Greeting.class.getName() + " value for " + ObjectListApi.class.getName() + "#greetings[1]: 123456");
+    }
+
+    @Test void shouldFailToAssignNumberToObjectListQuery() {
+        fixture.returnsData("\"greetings\":[123,456.78]");
+        ObjectListApi api = fixture.builder().build(ObjectListApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid " + Greeting.class.getName() + " value for " + ObjectListApi.class.getName() + "#greetings[0]: 123");
     }
 
 

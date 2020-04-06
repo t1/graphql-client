@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
+import static com.github.t1.graphql.client.json.GraphQlClientValueException.check;
 import static com.github.t1.graphql.client.json.JsonReader.readJson;
 import static lombok.AccessLevel.PACKAGE;
 
@@ -15,6 +16,7 @@ class JsonObjectReader implements Reader<JsonObject> {
     private final TypeInfo type;
 
     @Override public Object read(Location location, JsonObject value) {
+        check(location, value, !type.isCollection() && !type.isScalar());
         Object instance = type.newInstance();
         type.fields().forEach(field -> {
             Object fieldValue = buildValue(location, value, field);

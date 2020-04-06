@@ -1,6 +1,5 @@
 package com.github.t1.graphql.client.json;
 
-import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,7 +24,7 @@ class JsonNumberReader implements Reader<JsonNumber> {
         for (MatchReader<JsonNumber> reader : SUB_READERS)
             if (reader.matches(type.getRawType()))
                 return reader.read(location, value);
-        throw new GraphQlClientException("can't map number '" + value + "' to " + type);
+        throw new GraphQlClientValueException(location, value);
     }
 
     private final List<MatchReader<JsonNumber>> SUB_READERS = asList(

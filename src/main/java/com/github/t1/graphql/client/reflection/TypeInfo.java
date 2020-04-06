@@ -99,11 +99,15 @@ public class TypeInfo {
     }
 
     public boolean isScalar() {
-        return getRawType().isPrimitive()
+        return isPrimitive()
             || Character.class.equals(getRawType()) // has a valueOf(char), not valueOf(String)
             || CharSequence.class.isAssignableFrom(getRawType())
             || isEnum()
             || scalarConstructor().isPresent();
+    }
+
+    public boolean isPrimitive() {
+        return getRawType().isPrimitive();
     }
 
     public boolean isEnum() {

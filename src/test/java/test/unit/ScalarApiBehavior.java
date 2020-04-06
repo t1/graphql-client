@@ -36,6 +36,51 @@ class ScalarApiBehavior {
             then(bool).isTrue();
         }
 
+        @Test void shouldFailToAssignNullToBool() {
+            fixture.returnsData("\"bool\":null");
+            BoolApi api = fixture.builder().build(BoolApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid boolean value for " + BoolApi.class.getName() + "#bool: null");
+        }
+
+        @Test void shouldFailToAssignStringToBool() {
+            fixture.returnsData("\"bool\":\"xxx\"");
+            BoolApi api = fixture.builder().build(BoolApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid boolean value for " + BoolApi.class.getName() + "#bool: \"xxx\"");
+        }
+
+        @Test void shouldFailToAssignNumberToBool() {
+            fixture.returnsData("\"bool\":123");
+            BoolApi api = fixture.builder().build(BoolApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid boolean value for " + BoolApi.class.getName() + "#bool: 123");
+        }
+
+        @Test void shouldFailToAssignListToBool() {
+            fixture.returnsData("\"bool\":[123]");
+            BoolApi api = fixture.builder().build(BoolApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid boolean value for " + BoolApi.class.getName() + "#bool: [123]");
+        }
+
+        @Test void shouldFailToAssignObjectToBool() {
+            fixture.returnsData("\"bool\":{\"foo\":\"bar\"}");
+            BoolApi api = fixture.builder().build(BoolApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid boolean value for " + BoolApi.class.getName() + "#bool: {\"foo\":\"bar\"}");
+        }
+
 
         @Test void shouldCallBooleanQuery() {
             fixture.returnsData("\"bool\":true");
@@ -531,6 +576,4 @@ class ScalarApiBehavior {
             then(value).isEqualTo(bigNumber);
         }
     }
-
-    // TODO more invalid value tests
 }

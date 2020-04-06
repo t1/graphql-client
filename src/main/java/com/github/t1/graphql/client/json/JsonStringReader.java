@@ -26,7 +26,8 @@ class JsonStringReader implements Reader<JsonString> {
         if (type.isEnum())
             //noinspection rawtypes,unchecked
             return Enum.valueOf((Class) type.getRawType(), value.getString());
-        Executable executable = type.scalarConstructor().orElseThrow(() -> new GraphQlClientException("expected a scalar constructor on " + type));
+        Executable executable = type.scalarConstructor()
+            .orElseThrow(() -> new GraphQlClientValueException(location, value));
         return execute(executable, value.getString());
     }
 

@@ -11,6 +11,7 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import java.util.Optional;
 
+import static com.github.t1.graphql.client.json.GraphQlClientValueException.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor(access = PRIVATE)
@@ -42,6 +43,7 @@ public class JsonReader {
             case FALSE:
                 return new JsonBooleanReader(type).read(location, value);
             case NULL:
+                check(location, value, !type.isPrimitive());
                 return null;
         }
         throw new GraphQlClientException("unreachable code");

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 
 import static com.github.t1.graphql.client.CollectionUtils.toArray;
+import static com.github.t1.graphql.client.json.GraphQlClientValueException.check;
 import static com.github.t1.graphql.client.json.JsonReader.readJson;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -20,6 +21,7 @@ class JsonArrayReader implements Reader<JsonArray> {
     private final TypeInfo type;
 
     @Override public Object read(Location location, JsonArray value) {
+        check(location, value, type.isCollection());
         IndexedLocationBuilder locationBuilder = new IndexedLocationBuilder(location);
         return value.stream().map(item -> readItem(locationBuilder, item)).collect(collector());
     }
