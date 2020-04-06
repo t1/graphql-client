@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -77,12 +78,20 @@ public class TypeInfo {
         return (type instanceof Class) && predicate.test((Class<?>) type);
     }
 
-    public Stream<FieldInfo> fields() {
-        Field[] declaredFields = getRawType().getDeclaredFields();
-        return Stream.of(declaredFields)
-            .filter(field -> !isStatic(field.getModifiers()))
-            .filter(field -> !isTransient(field.getModifiers()))
-            .map(field -> new FieldInfo(this, field));
+    public Stream<FieldInfo> fields() { return fields(getRawType()); }
+
+    private Stream<FieldInfo> fields(Class<?> rawType) {
+        return (rawType == Object.class) ? Stream.of() :
+            Stream.concat(
+                fields(rawType.getSuperclass()),
+                Stream.of(rawType.getDeclaredFields())
+                    .filter(this::isGraphQlField)
+                    .map(field -> new FieldInfo(this, field))
+            );
+    }
+
+    private boolean isGraphQlField(Field field) {
+        return !isStatic(field.getModifiers()) && !isTransient(field.getModifiers());
     }
 
     public boolean isOptional() {
@@ -126,7 +135,9 @@ public class TypeInfo {
 
     public Object newInstance() {
         try {
-            return getRawType().getConstructor().newInstance();
+            Constructor<?> noArgsConstructor = getRawType().getDeclaredConstructor();
+            noArgsConstructor.setAccessible(true);
+            return noArgsConstructor.newInstance();
         } catch (ReflectiveOperationException e) {
             throw new GraphQlClientException("can't create " + type, e);
         }

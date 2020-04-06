@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static lombok.AccessLevel.PRIVATE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -292,5 +293,37 @@ class NestedBehavior {
         then(foo.ignoreMe).isFalse();
     }
 
-    // TODO map, set, inherited fields
+
+    interface InheritedGreetingApi {
+        Sub call();
+    }
+
+    @EqualsAndHashCode(callSuper = true) @NoArgsConstructor(access = PRIVATE)
+    @Data public static class Sub extends Super {
+        int count;
+
+        public Sub(Greeting greeting, int count) {
+            super(greeting);
+            this.count = count;
+        }
+
+        public String toString() { return "Sub(" + greeting + ", " + count + ")"; }
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(access = PRIVATE)
+    @Data public static class Super {
+        Greeting greeting;
+    }
+
+    @Test void shouldCallInheritedGreetingQuery() {
+        fixture.returnsData("\"call\":{" +
+            "\"greeting\":{\"text\":\"a\",\"code\":1}," +
+            "\"count\":3}");
+        InheritedGreetingApi api = fixture.builder().build(InheritedGreetingApi.class);
+
+        Sub sub = api.call();
+
+        then(fixture.query()).isEqualTo("call {greeting{text code} count}");
+        then(sub).isEqualTo(new Sub(new Greeting("a", 1), 3));
+    }
 }

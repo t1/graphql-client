@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client.json;
 
+import com.github.t1.graphql.client.reflection.FieldInfo;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 
@@ -16,11 +17,15 @@ class JsonObjectReader implements Reader<JsonObject> {
     @Override public Object read(Location location, JsonObject value) {
         Object instance = type.newInstance();
         type.fields().forEach(field -> {
-            Location fieldLocation = new Location(field.getType(), location.getDescription() + "." + field.getName());
-            JsonValue jsonFieldValue = value.get(field.getName());
-            Object javaFieldValue = readJson(fieldLocation, field.getType(), jsonFieldValue);
-            field.set(instance, javaFieldValue);
+            Object fieldValue = buildValue(location, value, field);
+            field.set(instance, fieldValue);
         });
         return instance;
+    }
+
+    private Object buildValue(Location location, JsonObject value, FieldInfo field) {
+        Location fieldLocation = new Location(field.getType(), location.getDescription() + "." + field.getName());
+        JsonValue jsonFieldValue = value.get(field.getName());
+        return readJson(fieldLocation, field.getType(), jsonFieldValue);
     }
 }
