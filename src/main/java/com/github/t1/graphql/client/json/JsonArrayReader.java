@@ -4,9 +4,9 @@ import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 
 import javax.json.JsonArray;
+import javax.json.JsonValue;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static com.github.t1.graphql.client.CollectionUtils.toArray;
@@ -16,12 +16,16 @@ import static java.util.stream.Collectors.toSet;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
-class JsonArrayReader implements Supplier<Object> {
+class JsonArrayReader implements Reader<JsonArray> {
     private final TypeInfo type;
-    private final JsonArray value;
 
-    @Override public Object get() {
-        return value.stream().map(v -> readJson(type.getItemType(), v)).collect(collector());
+    @Override public Object read(Location location, JsonArray value) {
+        IndexedLocationBuilder locationBuilder = new IndexedLocationBuilder(location);
+        return value.stream().map(item -> readItem(locationBuilder, item)).collect(collector());
+    }
+
+    private Object readItem(IndexedLocationBuilder locationBuilder, JsonValue value) {
+        return readJson(locationBuilder.nextLocation(), type.getItemType(), value);
     }
 
     private Collector<Object, ?, ?> collector() {

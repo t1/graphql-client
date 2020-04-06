@@ -12,24 +12,23 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+import static com.github.t1.graphql.client.json.GraphQlClientValueException.check;
 import static java.util.Arrays.asList;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
-class JsonNumberReader implements Supplier<Object> {
+class JsonNumberReader implements Reader<JsonNumber> {
     private final TypeInfo type;
-    private final JsonNumber value;
 
-    @Override public Object get() {
-        for (NumberReader sub : SUB_READERS)
-            if (sub.matches())
-                return sub.read();
+    @Override public Object read(Location location, JsonNumber value) {
+        for (MatchReader<JsonNumber> reader : SUB_READERS)
+            if (reader.matches(type.getRawType()))
+                return reader.read(location, value);
         throw new GraphQlClientException("can't map number '" + value + "' to " + type);
     }
 
-    private final List<NumberReader> SUB_READERS = asList(
+    private final List<MatchReader<JsonNumber>> SUB_READERS = asList(
         new IntReader(Byte.class, i -> (byte) (long) i),
         new IntReader(char.class, Character.class, Character.MIN_VALUE, Character.MAX_VALUE, i -> (char) (long) i),
         new IntReader(Short.class, i -> (short) (long) i),
@@ -41,14 +40,8 @@ class JsonNumberReader implements Supplier<Object> {
         new BigDecimalReader()
     );
 
-    public interface NumberReader {
-        boolean matches();
-
-        Object read();
-    }
-
     @RequiredArgsConstructor
-    private class IntReader implements NumberReader {
+    private static class IntReader implements MatchReader<JsonNumber> {
         private final Class<?> type;
         private final Class<?> primitive;
         private final long minValue;
@@ -63,68 +56,68 @@ class JsonNumberReader implements Supplier<Object> {
                 cast);
         }
 
-        @Override public boolean matches() {
-            return primitive.equals(JsonNumberReader.this.type.getRawType()) || type.equals(JsonNumberReader.this.type.getRawType());
+        @Override public boolean matches(Class<?> rawType) {
+            return primitive.equals(rawType) || type.equals(rawType);
         }
 
-        @Override public Object read() {
-            long value = JsonNumberReader.this.value.longValue();
-            check(value >= minValue);
-            check(value <= maxValue);
-            return cast.apply(value);
+        @Override public Object read(Location location, JsonNumber value) {
+            long longValue = value.longValue();
+            check(location, value, longValue >= minValue);
+            check(location, value, longValue <= maxValue);
+            return cast.apply(longValue);
         }
     }
 
-    private class LongReader implements NumberReader {
-        @Override public boolean matches() {
-            return long.class.equals(type.getRawType()) || Long.class.equals(type.getRawType());
+    private static class LongReader implements MatchReader<JsonNumber> {
+        @Override public boolean matches(Class<?> rawType) {
+            return long.class.equals(rawType) || Long.class.equals(rawType);
         }
 
-        @Override public Object read() {
+        @Override public Object read(Location location, JsonNumber value) {
             try {
                 return value.longValueExact();
             } catch (ArithmeticException e) {
-                throw invalidValueException();
+                throw new GraphQlClientValueException(location, value);
             }
         }
     }
 
-    private class FloatReader implements NumberReader {
-        @Override public boolean matches() {
-            return float.class.equals(type.getRawType()) || Float.class.equals(type.getRawType());
+    private static class FloatReader implements MatchReader<JsonNumber> {
+        @Override public boolean matches(Class<?> rawType) {
+            return float.class.equals(rawType) || Float.class.equals(rawType);
         }
 
-        @Override public Object read() {
+        @Override public Object read(Location location, JsonNumber value) {
             return (float) value.doubleValue();
         }
     }
 
-    private class DoubleReader implements NumberReader {
-        @Override public boolean matches() {
-            return double.class.equals(type.getRawType()) || Double.class.equals(type.getRawType());
+    private static class DoubleReader implements MatchReader<JsonNumber> {
+        @Override public boolean matches(Class<?> rawType) {
+            return double.class.equals(rawType) || Double.class.equals(rawType);
         }
 
-        @Override public Object read() {
+        @Override public Object read(Location location, JsonNumber value) {
             return value.doubleValue();
         }
     }
 
-    private class BigIntegerReader implements NumberReader {
-        @Override public boolean matches() {
-            return BigInteger.class.equals(type.getRawType());
+    private static class BigIntegerReader implements MatchReader<JsonNumber> {
+        @Override public boolean matches(Class<?> rawType) {
+            return BigInteger.class.equals(rawType);
         }
 
-        @Override public Object read() {
+        @Override public Object read(Location location, JsonNumber value) {
             return value.bigIntegerValueExact();
         }
     }
 
-    private class BigDecimalReader implements NumberReader {
-        @Override public boolean matches() {
-            return BigDecimal.class.equals(type.getRawType());
+    private static class BigDecimalReader implements MatchReader<JsonNumber> {
+        @Override public boolean matches(Class<?> rawType) {
+            return BigDecimal.class.equals(rawType);
         }
 
-        @Override public Object read() {
+        @Override public Object read(Location location, JsonNumber value) {
             return value.bigDecimalValue();
         }
     }
@@ -140,15 +133,5 @@ class JsonNumberReader implements Supplier<Object> {
         field.setAccessible(true);
         //noinspection unchecked
         return (T) field.get(null);
-    }
-
-    private void check(boolean value) {
-        if (!value)
-            throw invalidValueException();
-    }
-
-    private GraphQlClientException invalidValueException() {
-        return new GraphQlClientException("invalid value for " + type + " field "
-            + "code"/* TODO field name */ + ": " + this.value);
     }
 }

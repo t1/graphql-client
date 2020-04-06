@@ -2,6 +2,7 @@ package com.github.t1.graphql.client;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.api.GraphQlClientHeader;
+import com.github.t1.graphql.client.json.Location;
 import com.github.t1.graphql.client.reflection.FieldInfo;
 import com.github.t1.graphql.client.reflection.MethodInfo;
 import com.github.t1.graphql.client.reflection.ParameterInfo;
@@ -117,13 +118,26 @@ class GraphQlClientProxy {
     }
 
     private Object fromJson(MethodInfo method, String request, String response) {
+        JsonObject responseJson = readResponse(request, response);
+        JsonValue value = getData(method, responseJson);
+        return readJson(location(method), method.getReturnType(), value);
+    }
+
+    private JsonObject readResponse(String request, String response) {
         JsonObject responseJson = Json.createReader(new StringReader(response)).readObject();
         if (responseJson.containsKey("errors") && !responseJson.isNull("errors"))
             throw new GraphQlClientException("errors from service: " + responseJson.getJsonArray("errors") + ":\n  " + request);
+        return responseJson;
+    }
+
+    private JsonValue getData(MethodInfo method, JsonObject responseJson) {
         JsonObject data = responseJson.getJsonObject("data");
         if (!data.containsKey(method.getName()))
             throw new GraphQlClientException("no data for '" + method.getName() + "':\n  " + data);
-        JsonValue value = data.get(method.getName());
-        return readJson(method.getReturnType(), value);
+        return data.get(method.getName());
+    }
+
+    private Location location(MethodInfo method) {
+        return new Location(method.getReturnType(), method.toString());
     }
 }

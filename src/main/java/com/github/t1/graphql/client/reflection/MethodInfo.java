@@ -20,7 +20,7 @@ public class MethodInfo {
     private final Method method;
     private final Object[] parameterValues;
 
-    @Override public String toString() { return "method '" + method.getName() + "' in " + type; }
+    @Override public String toString() { return type + "#" + method.getName(); }
 
     public String getName() {
         if (method.isAnnotationPresent(Query.class)) {

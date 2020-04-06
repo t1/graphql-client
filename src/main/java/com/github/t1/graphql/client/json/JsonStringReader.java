@@ -8,20 +8,17 @@ import javax.json.JsonString;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.util.function.Supplier;
 
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
-class JsonStringReader implements Supplier<Object> {
+class JsonStringReader implements Reader<JsonString> {
     private final TypeInfo type;
-    private final JsonString value;
 
-    @Override public Object get() {
+    @Override public Object read(Location location, JsonString value) {
         if (char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType())) {
             if (value.getChars().length() != 1)
-                throw new GraphQlClientException("invalid value for " + type.getRawType().getName()
-                    + " field " + "code" /* TODO field name */ + ": '" + value.getString() + "'");
+                throw new GraphQlClientValueException(location, value);
             return value.getChars().charAt(0);
         }
         if (String.class.equals(type.getRawType()))

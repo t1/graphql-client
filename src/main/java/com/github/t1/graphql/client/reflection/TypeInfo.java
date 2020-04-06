@@ -62,6 +62,12 @@ public class TypeInfo {
             + ((container == null) ? "" : " in " + container);
     }
 
+    public String getTypeName() {
+        if (type instanceof TypeVariable)
+            return resolveTypeVariable().getTypeName();
+        return type.getTypeName();
+    }
+
     public boolean isCollection() {
         return ifClass(Class::isArray)
             || Collection.class.isAssignableFrom(getRawType());
@@ -116,5 +122,13 @@ public class TypeInfo {
             && Modifier.isStatic(method.getModifiers())
             && method.getReturnType().equals(type)
             && hasOneStringParameter(method);
+    }
+
+    public Object newInstance() {
+        try {
+            return getRawType().getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new GraphQlClientException("can't create " + type, e);
+        }
     }
 }

@@ -86,8 +86,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Byte " +
-                "in " + ByteApi.class.getName() + " field code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Byte value for " + ByteApi.class.getName() + "#code: " + tooBig);
         }
 
         @Test void shouldFailByteFromNegativeNumberQuery() {
@@ -97,8 +96,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Byte " +
-                "in " + ByteApi.class.getName() + " field code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Byte value for " + ByteApi.class.getName() + "#code: " + tooSmall);
         }
     }
 
@@ -128,7 +126,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Character field code: 'ab'");
+            then(thrown).hasMessage("invalid java.lang.Character value for " + CharacterApi.class.getName() + "#code: \"ab\"");
         }
 
         @Test void shouldCallCharacterFromNumberQuery() {
@@ -148,8 +146,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Character " +
-                "in " + CharacterApi.class.getName() + " field code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Character value for " + CharacterApi.class.getName() + "#code: " + tooBig);
         }
 
         @Test void shouldFailCharacterFromNegativeNumberQuery() {
@@ -158,8 +155,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Character " +
-                "in " + CharacterApi.class.getName() + " field code: -15");
+            then(thrown).hasMessage("invalid java.lang.Character value for " + CharacterApi.class.getName() + "#code: -15");
         }
 
 
@@ -179,7 +175,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for char field code: 'ab'");
+            then(thrown).hasMessage("invalid char value for " + PrimitiveCharApi.class.getName() + "#code: \"ab\"");
         }
     }
 
@@ -210,7 +206,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Short in test.unit.ScalarApiBehavior$ShortApi field code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Short value for test.unit.ScalarApiBehavior$ShortApi#code: " + tooSmall);
         }
 
         @Test void shouldFailToCallTooBigShortQuery() {
@@ -220,7 +216,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Short in test.unit.ScalarApiBehavior$ShortApi field code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Short value for test.unit.ScalarApiBehavior$ShortApi#code: " + tooBig);
         }
 
 
@@ -262,7 +258,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Integer in test.unit.ScalarApiBehavior$IntegerApi field code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + tooSmall);
         }
 
         @Test void shouldFailToCallTooBigIntegerQuery() {
@@ -272,7 +268,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Integer in test.unit.ScalarApiBehavior$IntegerApi field code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + tooBig);
         }
 
 
@@ -314,7 +310,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Long in test.unit.ScalarApiBehavior$LongApi field code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Long value for " + LongApi.class.getName() + "#code: " + tooSmall);
         }
 
         @Test void shouldFailToCallTooBigLongQuery() {
@@ -324,7 +320,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid value for java.lang.Long in test.unit.ScalarApiBehavior$LongApi field code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Long value for test.unit.ScalarApiBehavior$LongApi#code: " + tooBig);
         }
 
 
@@ -536,5 +532,5 @@ class ScalarApiBehavior {
         }
     }
 
-    // TODO many invalid value tests
+    // TODO more invalid value tests
 }

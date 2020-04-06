@@ -10,40 +10,39 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor(access = PRIVATE)
 public class JsonReader {
-    public static Object readJson(TypeInfo type, JsonValue value) {
-        return new JsonReader(type, value).read();
+    public static Object readJson(Location location, TypeInfo type, JsonValue value) {
+        return new JsonReader(type, value).read(location);
     }
 
     private final TypeInfo type;
     private final JsonValue value;
 
-    private Object read() {
+    private Object read(Location location) {
         if (type.isOptional())
-            return Optional.ofNullable(readJson(type.getItemType(), value));
-        return reader().get();
+            return Optional.ofNullable(readJson(location, type.getItemType(), value));
+        return reader(location);
     }
 
-    private Supplier<Object> reader() {
+    private Object reader(Location location) {
         switch (value.getValueType()) {
             case ARRAY:
-                return new JsonArrayReader(type, (JsonArray) value);
+                return new JsonArrayReader(type).read(location, (JsonArray) value);
             case OBJECT:
-                return new JsonObjectReader(type, (JsonObject) value);
+                return new JsonObjectReader(type).read(location, (JsonObject) value);
             case STRING:
-                return new JsonStringReader(type, (JsonString) value);
+                return new JsonStringReader(type).read(location, (JsonString) value);
             case NUMBER:
-                return new JsonNumberReader(type, (JsonNumber) value);
+                return new JsonNumberReader(type).read(location, (JsonNumber) value);
             case TRUE:
             case FALSE:
-                return new JsonBooleanReader(type, value);
+                return new JsonBooleanReader(type).read(location, value);
             case NULL:
-                return () -> null;
+                return null;
         }
         throw new GraphQlClientException("unreachable code");
     }

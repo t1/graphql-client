@@ -1,5 +1,6 @@
 package test.unit;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class NestedBehavior {
@@ -194,6 +196,68 @@ class NestedBehavior {
         then(fixture.query()).isEqualTo("container {greeting{value{text code}} count}");
         then(container).isEqualTo(new WrappedGreetingContainer(
             new Wrapper<>(new Greeting("a", 1)), 3));
+    }
+
+
+    interface WrappedByteApi {
+        WrappedByteContainer container();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class WrappedByteContainer {
+        Wrapper<Byte> code;
+        int count;
+    }
+
+    @Test void shouldCallWrappedByteQuery() {
+        fixture.returnsData("\"container\":{\"code\":{\"value\":123},\"count\":3}");
+        WrappedByteApi api = fixture.builder().build(WrappedByteApi.class);
+
+        WrappedByteContainer container = api.container();
+
+        then(fixture.query()).isEqualTo("container {code{value} count}");
+        then(container).isEqualTo(new WrappedByteContainer(
+            new Wrapper<>((byte) 123), 3));
+    }
+
+    @Test void shouldFailToCallWrappedInvalidByteQuery() {
+        fixture.returnsData("\"container\":{\"code\":{\"value\":1000},\"count\":3}");
+        WrappedByteApi api = fixture.builder().build(WrappedByteApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::container, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.lang.Byte value for " + WrappedByteApi.class.getName() + "#container.code.value: 1000");
+    }
+
+
+    interface WrappedListByteApi {
+        WrappedListByteContainer container();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class WrappedListByteContainer {
+        List<Byte> codes;
+        int count;
+    }
+
+    @Test void shouldCallWrappedListByteQuery() {
+        fixture.returnsData("\"container\":{\"codes\":[97,98,99],\"count\":3}");
+        WrappedListByteApi api = fixture.builder().build(WrappedListByteApi.class);
+
+        WrappedListByteContainer container = api.container();
+
+        then(fixture.query()).isEqualTo("container {codes count}");
+        then(container).isEqualTo(new WrappedListByteContainer(
+            asList((byte) 'a', (byte) 'b', (byte) 'c'), 3));
+    }
+
+    @Test void shouldFailToCallWrappedInvalidListByteQuery() {
+        fixture.returnsData("\"container\":{\"codes\":[97,98,9999],\"count\":3}");
+        WrappedListByteApi api = fixture.builder().build(WrappedListByteApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::container, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid java.lang.Byte value for " + WrappedListByteApi.class.getName() + "#container.codes[2]: 9999");
     }
 
 
