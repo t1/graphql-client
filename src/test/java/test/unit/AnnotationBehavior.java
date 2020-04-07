@@ -47,7 +47,6 @@ public class AnnotationBehavior {
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
     @Data public static class Greeting {
-        // if we wanted to support `@Name` annotations here, we'd probably have to manipulate the byte code :-(
         @Name("foo") String text;
         @Name("key") int code;
     }

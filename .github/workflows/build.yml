@@ -15,4 +15,4 @@ jobs:
         path: ~/.m2/repository
         key: maven-${{ hashFiles('**/pom.xml') }}
     - name: mvn build
-      run: mvn --batch-mode verify # pitest:mutationCoverage
+      run: mvn --batch-mode verify
