@@ -11,7 +11,7 @@ import static com.github.t1.graphql.client.json.GraphQlClientValueException.chec
 class JsonNumberReader extends Reader<JsonNumber> {
     JsonNumberReader(TypeInfo type, Location location, JsonNumber value) { super(type, location, value); }
 
-    @Override public Object read() {
+    @Override Object read() {
         try {
             return read(location, value, type.getRawType());
         } catch (ArithmeticException e) {

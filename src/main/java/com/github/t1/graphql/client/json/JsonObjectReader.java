@@ -12,7 +12,7 @@ import static com.github.t1.graphql.client.json.JsonReader.readJson;
 class JsonObjectReader extends Reader<JsonObject> {
     JsonObjectReader(TypeInfo type, Location location, JsonObject value) { super(type, location, value); }
 
-    @Override public Object read() {
+    @Override Object read() {
         check(location, value, !type.isCollection() && !type.isScalar());
         Object instance = type.newInstance();
         type.fields().forEach(field -> {

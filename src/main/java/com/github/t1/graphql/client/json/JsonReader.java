@@ -1,6 +1,7 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
+import com.github.t1.graphql.client.reflection.MethodInfo;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 
 import javax.json.JsonArray;
@@ -11,7 +12,12 @@ import javax.json.JsonValue;
 import java.util.Optional;
 
 public class JsonReader extends Reader<JsonValue> {
-    public static Object readJson(Location location, TypeInfo type, JsonValue value) {
+    public static Object readFrom(MethodInfo method, JsonValue value) {
+        TypeInfo type = method.getReturnType();
+        return readJson(new Location(type, method.toString()), type, value);
+    }
+
+    static Object readJson(Location location, TypeInfo type, JsonValue value) {
         return new JsonReader(type, location, value).read();
     }
 
