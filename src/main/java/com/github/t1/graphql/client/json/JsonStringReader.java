@@ -1,12 +1,10 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
+import com.github.t1.graphql.client.reflection.ConstructingInfo;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 
 import javax.json.JsonString;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 
 class JsonStringReader extends Reader<JsonString> {
     JsonStringReader(TypeInfo type, Location location, JsonString value) { super(type, location, value); }
@@ -22,20 +20,12 @@ class JsonStringReader extends Reader<JsonString> {
         if (type.isEnum())
             //noinspection rawtypes,unchecked
             return Enum.valueOf((Class) type.getRawType(), value.getString());
-        Executable executable = type.scalarConstructor()
+        ConstructingInfo constructor = type.scalarConstructor()
             .orElseThrow(() -> new GraphQlClientValueException(location, value));
-        return execute(executable, value.getString());
-    }
-
-    private Object execute(Executable executable, String string) {
         try {
-            if (executable instanceof Method) {
-                return ((Method) executable).invoke(null, string);
-            } else {
-                return ((Constructor<?>) executable).newInstance(string);
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new GraphQlClientException("can't create " + type, e);
+            return constructor.execute(value.getString());
+        } catch (Exception e) {
+            throw new GraphQlClientException("can't create scalar " + location, e);
         }
     }
 }

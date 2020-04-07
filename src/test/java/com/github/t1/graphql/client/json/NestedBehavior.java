@@ -1,10 +1,11 @@
-package test.unit;
+package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
 
@@ -406,5 +407,46 @@ class NestedBehavior {
 
         then(fixture.query()).isEqualTo("call {greeting{text code} count}");
         then(sub).isEqualTo(new Sub(new Greeting("a", 1), 3));
+    }
+
+
+    interface ObjectPrivateDefaultConstructorApi {
+        ObjectPrivateDefaultConstructor call();
+    }
+
+    @NoArgsConstructor(force = true, access = PRIVATE)
+    @Data public static class ObjectPrivateDefaultConstructor {
+        private final String foo;
+    }
+
+    @Test void shouldFailToCreateObjectPrivateDefaultConstructor() {
+        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        ObjectPrivateDefaultConstructorApi api = fixture.builder().build(ObjectPrivateDefaultConstructorApi.class);
+
+        ObjectPrivateDefaultConstructor call = api.call();
+
+        then(fixture.query()).isEqualTo("call {foo}");
+        then(call.foo).isEqualTo("a");
+    }
+
+
+    interface ObjectWithoutDefaultConstructorApi {
+        @SuppressWarnings("UnusedReturnValue") ObjectWithoutDefaultConstructor call();
+    }
+
+    @RequiredArgsConstructor
+    @Data public static class ObjectWithoutDefaultConstructor {
+        private final String foo;
+        private final String bar;
+    }
+
+    @Test void shouldFailToCreateObjectWithoutDefaultConstructor() {
+        fixture.returnsData("\"call\":{\"foo\":\"a\",\"bar\":\"b\"}");
+        ObjectWithoutDefaultConstructorApi api = fixture.builder().build(ObjectWithoutDefaultConstructorApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);
+
+        then(thrown).hasMessage("can't create " + ObjectWithoutDefaultConstructor.class.getName() +
+            " value for " + ObjectWithoutDefaultConstructorApi.class.getName() + "#call");
     }
 }

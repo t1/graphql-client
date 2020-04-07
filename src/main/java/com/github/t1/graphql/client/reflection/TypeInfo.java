@@ -4,6 +4,7 @@ import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -114,11 +115,13 @@ public class TypeInfo {
         return ifClass(Class::isEnum);
     }
 
-    public Optional<Executable> scalarConstructor() {
+    public Optional<ConstructingInfo> scalarConstructor() {
         return Stream.concat(
             Stream.of(getRawType().getConstructors()).filter(this::hasOneStringParameter),
             Stream.of(getRawType().getMethods()).filter(this::isStaticStringConstructor)
-        ).findFirst();
+        )
+            .findFirst()
+            .map(ConstructingInfo::new);
     }
 
     private boolean hasOneStringParameter(Executable executable) {
@@ -137,13 +140,10 @@ public class TypeInfo {
             && hasOneStringParameter(method);
     }
 
+    @SneakyThrows(ReflectiveOperationException.class)
     public Object newInstance() {
-        try {
-            Constructor<?> noArgsConstructor = getRawType().getDeclaredConstructor();
-            noArgsConstructor.setAccessible(true);
-            return noArgsConstructor.newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new GraphQlClientException("can't create " + type, e);
-        }
+        Constructor<?> noArgsConstructor = getRawType().getDeclaredConstructor();
+        noArgsConstructor.setAccessible(true);
+        return noArgsConstructor.newInstance();
     }
 }

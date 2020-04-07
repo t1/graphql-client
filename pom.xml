@@ -43,8 +43,8 @@
                 <configuration>
                     <withHistory>true</withHistory>
                     <timestampedReports>false</timestampedReports>
-                    <!--<coverageThreshold>70</coverageThreshold>-->
-                    <!--<mutationThreshold>40</mutationThreshold>-->
+                    <coverageThreshold>80</coverageThreshold>
+                    <mutationThreshold>80</mutationThreshold>
                 </configuration>
                 <dependencies>
                     <dependency>

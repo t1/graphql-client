@@ -1,12 +1,13 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.reflection.TypeInfo;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value
+@RequiredArgsConstructor @Getter
 class Location {
-    TypeInfo type;
-    String description;
+    private final TypeInfo type;
+    private final String description;
 
     @Override public String toString() { return type.getTypeName() + " value for " + description; }
 }

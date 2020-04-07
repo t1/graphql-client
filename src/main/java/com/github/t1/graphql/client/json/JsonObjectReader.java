@@ -1,5 +1,6 @@
 package com.github.t1.graphql.client.json;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.reflection.FieldInfo;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 
@@ -14,12 +15,20 @@ class JsonObjectReader extends Reader<JsonObject> {
 
     @Override Object read() {
         check(location, value, !type.isCollection() && !type.isScalar());
-        Object instance = type.newInstance();
+        Object instance = newInstance();
         type.fields().forEach(field -> {
             Object fieldValue = buildValue(location, value, field);
             field.set(instance, fieldValue);
         });
         return instance;
+    }
+
+    private Object newInstance() {
+        try {
+            return type.newInstance();
+        } catch (Exception e) {
+            throw new GraphQlClientException("can't create " + location, e);
+        }
     }
 
     private Object buildValue(Location location, JsonObject value, FieldInfo field) {

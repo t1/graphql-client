@@ -1,6 +1,7 @@
-package test.unit;
+package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
+import lombok.Data;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -251,7 +252,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Short value for test.unit.ScalarApiBehavior$ShortApi#code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Short value for com.github.t1.graphql.client.json.ScalarApiBehavior$ShortApi#code: " + tooSmall);
         }
 
         @Test void shouldFailToCallTooBigShortQuery() {
@@ -261,7 +262,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Short value for test.unit.ScalarApiBehavior$ShortApi#code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Short value for com.github.t1.graphql.client.json.ScalarApiBehavior$ShortApi#code: " + tooBig);
         }
 
 
@@ -303,7 +304,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + number);
+            then(thrown).hasMessage("invalid java.lang.Integer value for com.github.t1.graphql.client.json.ScalarApiBehavior$IntegerApi#code: " + number);
         }
 
         @Test void shouldFailToCallTooSmallIntegerQuery() {
@@ -313,7 +314,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + tooSmall);
+            then(thrown).hasMessage("invalid java.lang.Integer value for com.github.t1.graphql.client.json.ScalarApiBehavior$IntegerApi#code: " + tooSmall);
         }
 
         @Test void shouldFailToCallTooBigIntegerQuery() {
@@ -323,7 +324,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Integer value for com.github.t1.graphql.client.json.ScalarApiBehavior$IntegerApi#code: " + tooBig);
         }
 
 
@@ -375,7 +376,7 @@ class ScalarApiBehavior {
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
 
-            then(thrown).hasMessage("invalid java.lang.Long value for test.unit.ScalarApiBehavior$LongApi#code: " + tooBig);
+            then(thrown).hasMessage("invalid java.lang.Long value for com.github.t1.graphql.client.json.ScalarApiBehavior$LongApi#code: " + tooBig);
         }
 
 
@@ -585,5 +586,29 @@ class ScalarApiBehavior {
             then(fixture.query()).isEqualTo("foo");
             then(value).isEqualTo(bigNumber);
         }
+    }
+
+
+    interface FailingScalarApi {
+        @SuppressWarnings("UnusedReturnValue")
+        FailingScalar foo();
+    }
+
+    @Data public static class FailingScalar {
+        private final String text;
+
+        public FailingScalar(String text) {
+            throw new RuntimeException("dummy exception: " + text);
+        }
+    }
+
+    @Test void shouldFailToCreateFailingScalar() {
+        fixture.returnsData("\"foo\":\"a\"");
+        FailingScalarApi api = fixture.builder().build(FailingScalarApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::foo, GraphQlClientException.class);
+
+        then(thrown).hasMessage("can't create scalar " + FailingScalar.class.getName() + " value " +
+            "for " + FailingScalarApi.class.getName() + "#foo");
     }
 }

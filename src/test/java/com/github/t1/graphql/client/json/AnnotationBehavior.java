@@ -1,4 +1,4 @@
-package test.unit;
+package com.github.t1.graphql.client.json;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

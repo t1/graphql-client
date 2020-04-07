@@ -1,13 +1,13 @@
-package test.unit;
+package com.github.t1.graphql.client.json;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.github.t1.graphql.client.json.EnumBehavior.Episode.EMPIRE;
+import static com.github.t1.graphql.client.json.EnumBehavior.Episode.JEDI;
+import static com.github.t1.graphql.client.json.EnumBehavior.Episode.NEWHOPE;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.unit.EnumBehavior.Episode.EMPIRE;
-import static test.unit.EnumBehavior.Episode.JEDI;
-import static test.unit.EnumBehavior.Episode.NEWHOPE;
 
 class EnumBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
