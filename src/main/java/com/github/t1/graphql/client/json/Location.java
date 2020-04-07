@@ -4,7 +4,7 @@ import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.Value;
 
 @Value
-public class Location {
+class Location {
     TypeInfo type;
     String description;
 

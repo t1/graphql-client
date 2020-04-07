@@ -11,7 +11,7 @@ import static javax.json.JsonValue.ValueType.TRUE;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
-public class JsonBooleanReader implements Reader<JsonValue> {
+class JsonBooleanReader implements Reader<JsonValue> {
     private final TypeInfo type;
 
     @Override public Object read(Location location, JsonValue value) {
