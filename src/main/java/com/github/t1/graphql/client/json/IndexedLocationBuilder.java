@@ -14,7 +14,7 @@ class IndexedLocationBuilder {
         this.baseDescription = location.getDescription();
     }
 
-    public Location nextLocation() {
+    Location nextLocation() {
         return new Location(itemType, baseDescription + "[" + index.getAndIncrement() + "]");
     }
 }

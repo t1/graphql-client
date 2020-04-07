@@ -1,7 +1,6 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.reflection.TypeInfo;
-import lombok.RequiredArgsConstructor;
 
 import javax.json.JsonArray;
 import javax.json.JsonValue;
@@ -14,13 +13,11 @@ import static com.github.t1.graphql.client.json.GraphQlClientValueException.chec
 import static com.github.t1.graphql.client.json.JsonReader.readJson;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static lombok.AccessLevel.PACKAGE;
 
-@RequiredArgsConstructor(access = PACKAGE)
-class JsonArrayReader implements Reader<JsonArray> {
-    private final TypeInfo type;
+class JsonArrayReader extends Reader<JsonArray> {
+    JsonArrayReader(TypeInfo type, Location location, JsonArray value) { super(type, location, value); }
 
-    @Override public Object read(Location location, JsonArray value) {
+    @Override Object read() {
         check(location, value, type.isCollection());
         IndexedLocationBuilder locationBuilder = new IndexedLocationBuilder(location);
         return value.stream().map(item -> readItem(locationBuilder, item)).collect(collector());

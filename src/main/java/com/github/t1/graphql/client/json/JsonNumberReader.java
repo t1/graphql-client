@@ -1,20 +1,17 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.reflection.TypeInfo;
-import lombok.RequiredArgsConstructor;
 
 import javax.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static com.github.t1.graphql.client.json.GraphQlClientValueException.check;
-import static lombok.AccessLevel.PACKAGE;
 
-@RequiredArgsConstructor(access = PACKAGE)
-class JsonNumberReader implements Reader<JsonNumber> {
-    private final TypeInfo type;
+class JsonNumberReader extends Reader<JsonNumber> {
+    JsonNumberReader(TypeInfo type, Location location, JsonNumber value) { super(type, location, value); }
 
-    @Override public Object read(Location location, JsonNumber value) {
+    @Override public Object read() {
         try {
             return read(location, value, type.getRawType());
         } catch (ArithmeticException e) {

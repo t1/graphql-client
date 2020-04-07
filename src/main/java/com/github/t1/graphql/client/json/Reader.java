@@ -1,7 +1,17 @@
 package com.github.t1.graphql.client.json;
 
+import com.github.t1.graphql.client.reflection.TypeInfo;
+import lombok.RequiredArgsConstructor;
+
 import javax.json.JsonValue;
 
-interface Reader<T extends JsonValue> {
-    Object read(Location location, T value);
+import static lombok.AccessLevel.PACKAGE;
+
+@RequiredArgsConstructor(access = PACKAGE)
+abstract class Reader<T extends JsonValue> {
+    protected final TypeInfo type;
+    protected final Location location;
+    protected final T value;
+
+    abstract Object read();
 }

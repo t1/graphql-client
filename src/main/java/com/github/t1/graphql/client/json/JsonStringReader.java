@@ -2,20 +2,16 @@ package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.reflection.TypeInfo;
-import lombok.RequiredArgsConstructor;
 
 import javax.json.JsonString;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
-import static lombok.AccessLevel.PACKAGE;
+class JsonStringReader extends Reader<JsonString> {
+    JsonStringReader(TypeInfo type, Location location, JsonString value) { super(type, location, value); }
 
-@RequiredArgsConstructor(access = PACKAGE)
-class JsonStringReader implements Reader<JsonString> {
-    private final TypeInfo type;
-
-    @Override public Object read(Location location, JsonString value) {
+    @Override Object read() {
         if (char.class.equals(type.getRawType()) || Character.class.equals(type.getRawType())) {
             if (value.getChars().length() != 1)
                 throw new GraphQlClientValueException(location, value);
