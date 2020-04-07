@@ -9,6 +9,14 @@ class GraphQlClientValueException extends GraphQlClientException {
     }
 
     GraphQlClientValueException(Location location, Object value) {
-        super("invalid " + location + ": " + value);
+        super(message(location, value));
+    }
+
+    GraphQlClientValueException(Location location, Object value, Throwable cause) {
+        super(message(location, value), cause);
+    }
+
+    private static String message(Location location, Object value) {
+        return "invalid " + location + ": " + value;
     }
 }

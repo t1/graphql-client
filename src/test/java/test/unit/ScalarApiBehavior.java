@@ -296,6 +296,16 @@ class ScalarApiBehavior {
             then(code).isEqualTo(5);
         }
 
+        @Test void shouldFailToCallDoubleQuery() {
+            double number = 123.456d;
+            fixture.returnsData("\"code\":" + number);
+            IntegerApi api = fixture.builder().build(IntegerApi.class);
+
+            GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
+
+            then(thrown).hasMessage("invalid java.lang.Integer value for test.unit.ScalarApiBehavior$IntegerApi#code: " + number);
+        }
+
         @Test void shouldFailToCallTooSmallIntegerQuery() {
             long tooSmall = (long) Integer.MIN_VALUE - 1;
             fixture.returnsData("\"code\":" + tooSmall);
