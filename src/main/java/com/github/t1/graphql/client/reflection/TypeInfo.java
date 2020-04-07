@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -27,10 +28,13 @@ import static lombok.AccessLevel.PACKAGE;
 public class TypeInfo {
     private final TypeInfo container;
     private final @NonNull Type type;
+    private final AnnotatedType[] annotatedArgs;
 
     @Getter(lazy = true) private final TypeInfo itemType
         = new TypeInfo(this, computeItemType());
     @Getter(lazy = true) private final Class<?> rawType = raw(type);
+
+    public TypeInfo(TypeInfo containerType, Type itemType) { this(containerType, itemType, new AnnotatedType[0]); }
 
     private Type computeItemType() {
         assert isCollection() || isOptional();
@@ -145,5 +149,15 @@ public class TypeInfo {
         Constructor<?> noArgsConstructor = getRawType().getDeclaredConstructor();
         noArgsConstructor.setAccessible(true);
         return noArgsConstructor.newInstance();
+    }
+
+    public boolean isNonNull() {
+        if (ifClass(c -> c.isAnnotationPresent(org.eclipse.microprofile.graphql.NonNull.class)))
+            return true;
+        if (!container.isCollection())
+            return false;
+        // TODO this is not generally correct
+        AnnotatedType annotatedArg = container.annotatedArgs[0];
+        return annotatedArg.isAnnotationPresent(org.eclipse.microprofile.graphql.NonNull.class);
     }
 }

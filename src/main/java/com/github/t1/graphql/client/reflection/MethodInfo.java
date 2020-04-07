@@ -3,6 +3,8 @@ package com.github.t1.graphql.client.reflection;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.graphql.Query;
 
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -34,7 +36,14 @@ public class MethodInfo {
 
     public int getParameterCount() { return method.getParameterCount(); }
 
-    public TypeInfo getReturnType() { return new TypeInfo(type, method.getGenericReturnType()); }
+    public TypeInfo getReturnType() { return new TypeInfo(type, method.getGenericReturnType(), returnTypeAnnotations()); }
+
+    private AnnotatedType[] returnTypeAnnotations() {
+        if (method.getAnnotatedReturnType() instanceof AnnotatedParameterizedType)
+            return ((AnnotatedParameterizedType) method.getAnnotatedReturnType()).getAnnotatedActualTypeArguments();
+        else
+            return new AnnotatedType[0];
+    }
 
     public List<ParameterInfo> getParameters() {
         Parameter[] parameters = method.getParameters();

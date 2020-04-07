@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.eclipse.microprofile.graphql.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -83,6 +84,31 @@ class NestedBehavior {
 
         then(fixture.query()).isEqualTo("greetings");
         then(greetings).containsExactly("a", "b");
+    }
+
+    @Test void shouldCallStringListQueryWithNull() {
+        fixture.returnsData("\"greetings\":[\"a\",null]");
+        StringListApi api = fixture.builder().build(StringListApi.class);
+
+        List<String> greetings = api.greetings();
+
+        then(fixture.query()).isEqualTo("greetings");
+        then(greetings).containsExactly("a", null);
+    }
+
+
+    interface NonNullStringListApi {
+        @SuppressWarnings("UnusedReturnValue")
+        List<@NonNull String> greetings();
+    }
+
+    @Test void shouldFailToCallNonNullStringListQuery() {
+        fixture.returnsData("\"greetings\":[\"a\",null]");
+        NonNullStringListApi api = fixture.builder().build(NonNullStringListApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
+
+        then(thrown).hasMessage("invalid null java.lang.String value for " + NonNullStringListApi.class.getName() + "#greetings[1]");
     }
 
 
@@ -448,5 +474,68 @@ class NestedBehavior {
 
         then(thrown).hasMessage("can't create " + ObjectWithoutDefaultConstructor.class.getName() +
             " value for " + ObjectWithoutDefaultConstructorApi.class.getName() + "#call");
+    }
+
+
+    interface MissingNullableFieldApi {
+        MissingNullableField call();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class MissingNullableField {
+        @NonNull String foo;
+        String bar;
+    }
+
+    @Test void shouldCallWithMissingNullableField() {
+        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        MissingNullableFieldApi api = fixture.builder().build(MissingNullableFieldApi.class);
+
+        MissingNullableField result = api.call();
+
+        then(fixture.query()).isEqualTo("call {foo bar}");
+        then(result).isEqualTo(new MissingNullableField("a", null));
+    }
+
+
+    interface MissingNonNullFieldApi {
+        @SuppressWarnings("UnusedReturnValue")
+        MissingNonNullField call();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class MissingNonNullField {
+        String foo;
+        @NonNull String bar;
+    }
+
+    @Test void shouldFailToSetMissingNonNullField() {
+        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        MissingNonNullFieldApi api = fixture.builder().build(MissingNonNullFieldApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);
+
+        then(thrown).hasMessage("missing java.lang.String value for " + MissingNonNullFieldApi.class.getName() + "#call.bar");
+    }
+
+
+    interface MissingPrimitiveFieldApi {
+        @SuppressWarnings("UnusedReturnValue")
+        MissingPrimitiveField call();
+    }
+
+    @AllArgsConstructor @NoArgsConstructor(force = true)
+    @Data public static class MissingPrimitiveField {
+        String foo;
+        boolean bar;
+    }
+
+    @Test void shouldFailToSetMissingPrimitiveField() {
+        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        MissingPrimitiveFieldApi api = fixture.builder().build(MissingPrimitiveFieldApi.class);
+
+        GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);
+
+        then(thrown).hasMessage("missing boolean value for " + MissingPrimitiveFieldApi.class.getName() + "#call.bar");
     }
 }

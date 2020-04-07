@@ -3,6 +3,7 @@ package com.github.t1.graphql.client.reflection;
 import com.github.t1.graphql.client.api.GraphQlClientException;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.graphql.Name;
+import org.eclipse.microprofile.graphql.NonNull;
 
 import java.lang.reflect.Field;
 
@@ -30,7 +31,12 @@ public class FieldInfo {
             field.setAccessible(true);
             field.set(instance, value);
         } catch (ReflectiveOperationException e) {
+            // this code is unreachable: setAccessible also allows to change `final` fields
             throw new GraphQlClientException("can't set field " + this + " to " + value, e);
         }
+    }
+
+    public boolean isNonNull() {
+        return field.isAnnotationPresent(NonNull.class) || getType().isPrimitive();
     }
 }

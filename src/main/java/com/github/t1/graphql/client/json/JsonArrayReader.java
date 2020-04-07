@@ -1,9 +1,12 @@
 package com.github.t1.graphql.client.json;
 
+import com.github.t1.graphql.client.api.GraphQlClientException;
 import com.github.t1.graphql.client.reflection.TypeInfo;
+import lombok.Getter;
 
 import javax.json.JsonArray;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -15,6 +18,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 class JsonArrayReader extends Reader<JsonArray> {
+
+    @Getter(lazy = true) private final Class<?> collectionType = type.getRawType();
+    @Getter(lazy = true) private final TypeInfo itemType = type.getItemType();
+
     JsonArrayReader(TypeInfo type, Location location, JsonArray value) { super(type, location, value); }
 
     @Override Object read() {
@@ -23,19 +30,23 @@ class JsonArrayReader extends Reader<JsonArray> {
         return value.stream().map(item -> readItem(locationBuilder, item)).collect(collector());
     }
 
-    private Object readItem(IndexedLocationBuilder locationBuilder, JsonValue value) {
-        return readJson(locationBuilder.nextLocation(), type.getItemType(), value);
+    private Object readItem(IndexedLocationBuilder locationBuilder, JsonValue itemValue) {
+        Location itemLocation = locationBuilder.nextLocation();
+        TypeInfo itemType = getItemType();
+        if (itemValue.getValueType() == ValueType.NULL && itemType.isNonNull())
+            throw new GraphQlClientException("invalid null " + itemLocation);
+        return readJson(itemLocation, itemType, itemValue);
     }
 
     private Collector<Object, ?, ?> collector() {
-        if (type.getRawType().isArray()) {
+        if (getCollectionType().isArray()) {
             @SuppressWarnings("unchecked")
-            Class<Object> rawItemType = (Class<Object>) type.getItemType().getRawType();
+            Class<Object> rawItemType = (Class<Object>) getItemType().getRawType();
             return toArray(rawItemType);
         }
-        if (Set.class.isAssignableFrom(type.getRawType()))
+        if (Set.class.isAssignableFrom(getCollectionType()))
             return toSet();
-        assert List.class.isAssignableFrom(type.getRawType());
+        assert List.class.isAssignableFrom(getCollectionType());
         return toList();
     }
 }
