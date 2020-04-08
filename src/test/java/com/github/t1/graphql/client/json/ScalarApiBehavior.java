@@ -501,6 +501,42 @@ class ScalarApiBehavior {
         BigInteger foo();
     }
 
+    interface FailingScalarApi {
+        @SuppressWarnings("UnusedReturnValue")
+        FailingScalar foo();
+    }
+
+    @Data public static class FailingScalar {
+        private final String text;
+
+        public FailingScalar(String text) {
+            throw new RuntimeException("dummy exception: " + text);
+        }
+    }
+
+    interface ScalarWithStringConstructorMethodApi {
+        ScalarWithStringConstructorMethod foo();
+    }
+
+    @SuppressWarnings("unused")
+    public static class ScalarWithStringConstructorMethod {
+        public static ScalarWithStringConstructorMethod other(String text) { return null; }
+
+        public static ScalarWithStringConstructorMethod valueOf() { return null; }
+
+        public static ScalarWithStringConstructorMethod valueOf(int i) { return null; }
+
+        public static void valueOf(String text) {}
+
+        public static ScalarWithStringConstructorMethod parse(String text) {
+            ScalarWithStringConstructorMethod result = new ScalarWithStringConstructorMethod();
+            result.text = text;
+            return result;
+        }
+
+        String text;
+    }
+
     @Nested class StringBehavior {
         @Test void shouldCallStringQuery() {
             fixture.returnsData("\"greeting\":\"dummy-greeting\"");
@@ -586,29 +622,27 @@ class ScalarApiBehavior {
             then(fixture.query()).isEqualTo("foo");
             then(value).isEqualTo(bigNumber);
         }
-    }
 
 
-    interface FailingScalarApi {
-        @SuppressWarnings("UnusedReturnValue")
-        FailingScalar foo();
-    }
+        @Test void shouldFailToCreateFailingScalar() {
+            fixture.returnsData("\"foo\":\"a\"");
+            FailingScalarApi api = fixture.builder().build(FailingScalarApi.class);
 
-    @Data public static class FailingScalar {
-        private final String text;
+            GraphQlClientException thrown = catchThrowableOfType(api::foo, GraphQlClientException.class);
 
-        public FailingScalar(String text) {
-            throw new RuntimeException("dummy exception: " + text);
+            then(thrown).hasMessage("can't create scalar " + FailingScalar.class.getName() + " value " +
+                "for " + FailingScalarApi.class.getName() + "#foo");
         }
-    }
 
-    @Test void shouldFailToCreateFailingScalar() {
-        fixture.returnsData("\"foo\":\"a\"");
-        FailingScalarApi api = fixture.builder().build(FailingScalarApi.class);
 
-        GraphQlClientException thrown = catchThrowableOfType(api::foo, GraphQlClientException.class);
+        @Test void shouldCallScalarWithStringConstructorMethodQuery() {
+            fixture.returnsData("\"foo\":\"bar\"");
+            ScalarWithStringConstructorMethodApi api = fixture.builder().build(ScalarWithStringConstructorMethodApi.class);
 
-        then(thrown).hasMessage("can't create scalar " + FailingScalar.class.getName() + " value " +
-            "for " + FailingScalarApi.class.getName() + "#foo");
+            ScalarWithStringConstructorMethod value = api.foo();
+
+            then(fixture.query()).isEqualTo("foo");
+            then(value.text).isEqualTo("bar");
+        }
     }
 }

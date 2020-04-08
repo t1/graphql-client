@@ -259,8 +259,6 @@ class NestedBehavior {
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
     @Data public static class GreetingsContainer {
-        public static final String CONST = "don't query static fields";
-
         List<Greeting> greetings;
         int count;
     }
