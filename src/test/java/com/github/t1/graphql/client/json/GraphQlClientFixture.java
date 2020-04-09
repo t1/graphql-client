@@ -53,11 +53,15 @@ class GraphQlClientFixture {
 
 
     String query() {
+        return rawQuery().replace('\"', '\'');
+    }
+
+    String rawQuery() {
         return queryBody(captureRequestEntity(), "query");
     }
 
     String mutation() {
-        return queryBody(captureRequestEntity(), "mutation");
+        return queryBody(captureRequestEntity(), "mutation").replace('\"', '\'');
     }
 
     private String captureRequestEntity() {
@@ -72,8 +76,7 @@ class GraphQlClientFixture {
         then(query).startsWith(operation);
         query = query.substring(operation.length()).trim();
         then(query).startsWith("{").endsWith("}");
-        query = query.substring(1, query.length() - 1).trim();
-        return query.replace('\"', '\'');
+        return query.substring(1, query.length() - 1).trim();
     }
 
 

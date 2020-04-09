@@ -80,11 +80,20 @@ class GraphQlClientProxy {
         if (value instanceof Boolean || value instanceof Number)
             out.append(value);
         else if (type.isScalar())
-            out.append("\"").append(value).append("\""); // TODO this could be a security issue
+            buildScalarParam(out, value);
         else if (type.isCollection())
             buildArrayParam(out, type.getItemType(), (List<?>) value);
         else
             buildObjectParam(out, type, value);
+    }
+
+    private void buildScalarParam(StringBuilder out, Object value) {
+        out
+            .append("\"")
+            .append(value.toString()
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n"))
+            .append("\"");
     }
 
     private void buildArrayParam(StringBuilder out, TypeInfo itemType, List<?> values) {

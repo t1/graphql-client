@@ -27,6 +27,16 @@ class ParametersBehavior {
         then(greeting).isEqualTo("hi, foo");
     }
 
+    @Test void shouldEscapeParamScalarQuery() {
+        fixture.returnsData("'greeting':'hi, foo'");
+        ParamApi api = fixture.builder().build(ParamApi.class);
+
+        String greeting = api.greeting("foo\"bar'\n");
+
+        then(fixture.rawQuery()).isEqualTo("greeting(who: \"foo\\\"bar'\\n\")");
+        then(greeting).isEqualTo("hi, foo");
+    }
+
 
     interface ParamsApi {
         String greeting(String who, int count);
