@@ -71,32 +71,49 @@ class GraphQlClientProxy {
 
     private String param(ParameterInfo parameter) {
         StringBuilder out = new StringBuilder();
-        buildParam(out, parameter.getName(), parameter.getType(), parameter.getValue());
+        out.append(parameter.getName()).append(": ");
+        buildParam(out, parameter.getType(), parameter.getValue());
         return out.toString();
     }
 
-    private void buildParam(StringBuilder out, String name, TypeInfo type, Object value) {
-        out.append(name).append(": ");
+    private void buildParam(StringBuilder out, TypeInfo type, Object value) {
         if (value instanceof Boolean || value instanceof Number)
             out.append(value);
         else if (type.isScalar())
             out.append("\"").append(value).append("\""); // TODO this could be a security issue
-        else if (type.isCollection()) {
-            out.append("[");
-            out.append("]");
-        } else {
-            out.append("{");
-            AtomicBoolean first = new AtomicBoolean(true);
-            type.fields().forEach(field -> {
-                if (first.get())
-                    first.set(false);
-                else
-                    out.append(", ");
-                buildParam(out, field.getName(), field.getType(), field.get(value));
-            });
-            out.append("}");
-        }
+        else if (type.isCollection())
+            buildArrayParam(out, type.getItemType(), (List<?>) value);
+        else
+            buildObjectParam(out, type, value);
     }
+
+    private void buildArrayParam(StringBuilder out, TypeInfo itemType, List<?> values) {
+        out.append("[");
+        AtomicBoolean first = new AtomicBoolean(true);
+        values.forEach(value -> {
+            if (first.get())
+                first.set(false);
+            else
+                out.append(", ");
+            buildParam(out, itemType, value);
+        });
+        out.append("]");
+    }
+
+    private void buildObjectParam(StringBuilder out, TypeInfo type, Object value) {
+        out.append("{");
+        AtomicBoolean first = new AtomicBoolean(true);
+        type.fields().forEach(field -> {
+            if (first.get())
+                first.set(false);
+            else
+                out.append(", ");
+            out.append(field.getName()).append(": ");
+            buildParam(out, field.getType(), field.get(value));
+        });
+        out.append("}");
+    }
+
 
     private String fields(TypeInfo type) {
         while (type.isOptional())

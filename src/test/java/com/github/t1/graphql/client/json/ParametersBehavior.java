@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class ParametersBehavior {
@@ -75,6 +78,56 @@ class ParametersBehavior {
         then(greeting).isEqualTo(new Greeting("ho", 3));
     }
 
-    // TODO array params + nested
+
+    interface ArrayParamApi {
+        boolean greetings(List<String> greets);
+    }
+
+    @Test void shouldCallArrayParamQuery() {
+        fixture.returnsData("'greetings':true");
+        ArrayParamApi api = fixture.builder().build(ArrayParamApi.class);
+
+        boolean success = api.greetings(asList("hi", "ho"));
+
+        then(fixture.query()).isEqualTo("greetings(greets: ['hi', 'ho'])");
+        then(success).isTrue();
+    }
+
+
+    interface ObjectArrayParamApi {
+        boolean greetings(List<Greeting> greets);
+    }
+
+    @Test void shouldCallObjectArrayParamQuery() {
+        fixture.returnsData("'greetings':true");
+        ObjectArrayParamApi api = fixture.builder().build(ObjectArrayParamApi.class);
+
+        boolean success = api.greetings(asList(new Greeting("hi", 5), new Greeting("ho", 3)));
+
+        then(fixture.query()).isEqualTo("greetings(greets: [{text: 'hi', count: 5}, {text: 'ho', count: 3}])");
+        then(success).isTrue();
+    }
+
+
+    interface ArrayObjectParamApi {
+        boolean foo(ArrayObject bar);
+    }
+
+    @AllArgsConstructor @NoArgsConstructor
+    @Data static class ArrayObject {
+        List<String> texts;
+        int count;
+    }
+
+    @Test void shouldCallArrayObjectParamQuery() {
+        fixture.returnsData("'foo':true");
+        ArrayObjectParamApi api = fixture.builder().build(ArrayObjectParamApi.class);
+
+        boolean success = api.foo(new ArrayObject(asList("hi", "ho"), 3));
+
+        then(fixture.query()).isEqualTo("foo(bar: {texts: ['hi', 'ho'], count: 3})");
+        then(success).isTrue();
+    }
+
     // TODO params as variables?
 }
