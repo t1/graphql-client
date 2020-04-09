@@ -5,7 +5,6 @@ import com.github.t1.graphql.client.api.GraphQlClientHeader;
 import com.github.t1.graphql.client.json.JsonReader;
 import com.github.t1.graphql.client.reflection.FieldInfo;
 import com.github.t1.graphql.client.reflection.MethodInfo;
-import com.github.t1.graphql.client.reflection.ParameterInfo;
 import com.github.t1.graphql.client.reflection.TypeInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import java.io.StringReader;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.github.t1.graphql.client.CollectionUtils.toMultivaluedMap;
 import static java.util.stream.Collectors.joining;
@@ -48,79 +46,17 @@ class GraphQlClientProxy {
 
     private String request(MethodInfo method) {
         JsonObjectBuilder request = Json.createObjectBuilder();
-        request.add("query", operation(method) +
-            " { " + graphQlRequest(method) +
-            fields(method.getReturnType())
-            + " }");
+        request.add("query",
+            operation(method)
+                + " { "
+                + new RequestBuilder(method).build()
+                + fields(method.getReturnType())
+                + " }");
         return request.build().toString();
     }
 
     private String operation(MethodInfo method) {
         return method.isQuery() ? "query" : "mutation";
-    }
-
-    private String graphQlRequest(MethodInfo method) {
-        StringBuilder request = new StringBuilder(method.getName());
-        if (method.getParameterCount() > 0) {
-            request.append(method.getParameters().stream()
-                .map(this::param)
-                .collect(joining(", ", "(", ")")));
-        }
-        return request.toString();
-    }
-
-    private String param(ParameterInfo parameter) {
-        StringBuilder out = new StringBuilder();
-        out.append(parameter.getName()).append(": ");
-        buildParam(out, parameter.getType(), parameter.getValue());
-        return out.toString();
-    }
-
-    private void buildParam(StringBuilder out, TypeInfo type, Object value) {
-        if (value instanceof Boolean || value instanceof Number)
-            out.append(value);
-        else if (type.isScalar())
-            buildScalarParam(out, value);
-        else if (type.isCollection())
-            buildArrayParam(out, type.getItemType(), (List<?>) value);
-        else
-            buildObjectParam(out, type, value);
-    }
-
-    private void buildScalarParam(StringBuilder out, Object value) {
-        out
-            .append("\"")
-            .append(value.toString()
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n"))
-            .append("\"");
-    }
-
-    private void buildArrayParam(StringBuilder out, TypeInfo itemType, List<?> values) {
-        out.append("[");
-        AtomicBoolean first = new AtomicBoolean(true);
-        values.forEach(value -> {
-            if (first.get())
-                first.set(false);
-            else
-                out.append(", ");
-            buildParam(out, itemType, value);
-        });
-        out.append("]");
-    }
-
-    private void buildObjectParam(StringBuilder out, TypeInfo type, Object value) {
-        out.append("{");
-        AtomicBoolean first = new AtomicBoolean(true);
-        type.fields().forEach(field -> {
-            if (first.get())
-                first.set(false);
-            else
-                out.append(", ");
-            out.append(field.getName()).append(": ");
-            buildParam(out, field.getType(), field.get(value));
-        });
-        out.append("}");
     }
 
 
