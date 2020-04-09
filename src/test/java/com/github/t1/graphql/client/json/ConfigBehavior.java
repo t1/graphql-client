@@ -26,7 +26,7 @@ class ConfigBehavior {
     @Test void shouldLoadEndpointConfig() {
         System.setProperty(API_URL_CONFIG_KEY, DUMMY_ENDPOINT);
         try {
-            fixture.returnsData("\"foo\":true");
+            fixture.returnsData("'foo':true");
             Api api = fixture.builderWithoutEndpointConfig().build(Api.class);
 
             api.foo();
@@ -40,7 +40,7 @@ class ConfigBehavior {
     @Test void shouldLoadEndpointFromKeyConfig() {
         System.setProperty("dummy-config-key/mp-graphql/url", DUMMY_ENDPOINT);
         try {
-            fixture.returnsData("\"foo\":true");
+            fixture.returnsData("'foo':true");
             Api api = fixture.builderWithoutEndpointConfig()
                 .configKey("dummy-config-key")
                 .build(Api.class);
@@ -59,7 +59,7 @@ class ConfigBehavior {
     }
 
     @Test void shouldLoadAnnotatedEndpointConfig() {
-        fixture.returnsData("\"foo\":true");
+        fixture.returnsData("'foo':true");
         ConfiguredEndpointApi api = fixture.builderWithoutEndpointConfig().build(ConfiguredEndpointApi.class);
 
         api.foo();
@@ -75,7 +75,7 @@ class ConfigBehavior {
     @Test void shouldLoadAnnotatedKeyConfig() {
         System.setProperty("dummy-config-key/mp-graphql/url", DUMMY_ENDPOINT);
         try {
-            fixture.returnsData("\"foo\":true");
+            fixture.returnsData("'foo':true");
             ConfiguredKeyApi api = fixture.builderWithoutEndpointConfig().build(ConfiguredKeyApi.class);
 
             boolean foo = api.foo();

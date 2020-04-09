@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class OptionalBehavior {
+class OptionalBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
 
@@ -17,7 +17,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallNullOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":null");
+        fixture.returnsData("'greeting':null");
         OptionalStringApi api = fixture.builder().build(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
@@ -27,7 +27,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":\"hi\"");
+        fixture.returnsData("'greeting':'hi'");
         OptionalStringApi api = fixture.builder().build(OptionalStringApi.class);
 
         Optional<String> greeting = api.greeting();
@@ -42,7 +42,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallOptionalGreetingQuery() {
-        fixture.returnsData("\"greeting\":{\"text\":\"hi\",\"code\":5}");
+        fixture.returnsData("'greeting':{'text':'hi','code':5}");
         OptionalGreetingApi api = fixture.builder().build(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
@@ -52,7 +52,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallNullOptionalGreetingQuery() {
-        fixture.returnsData("\"greeting\":null");
+        fixture.returnsData("'greeting':null");
         OptionalGreetingApi api = fixture.builder().build(OptionalGreetingApi.class);
 
         Optional<Greeting> greeting = api.greeting();
@@ -67,7 +67,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallOptionalGreetingListQuery() {
-        fixture.returnsData("\"greeting\":[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]");
+        fixture.returnsData("'greeting':[{'text':'hi','code':5},{'text':'ho','code':7}]");
         OptionalGreetingListApi api = fixture.builder().build(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
@@ -78,7 +78,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallEmptyOptionalGreetingListQuery() {
-        fixture.returnsData("\"greeting\":[]");
+        fixture.returnsData("'greeting':[]");
         OptionalGreetingListApi api = fixture.builder().build(OptionalGreetingListApi.class);
 
         Optional<List<Greeting>> greeting = api.greeting();
@@ -94,7 +94,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallListOfOptionalGreetingsQuery() {
-        fixture.returnsData("\"greetings\":[{\"text\":\"hi\",\"code\":5},{\"text\":\"ho\",\"code\":7}]");
+        fixture.returnsData("'greetings':[{'text':'hi','code':5},{'text':'ho','code':7}]");
         ListOfOptionalGreetingApi api = fixture.builder().build(ListOfOptionalGreetingApi.class);
 
         List<Optional<Greeting>> greetings = api.greetings();
@@ -106,7 +106,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallEmptyListOfOptionalGreetingsQuery() {
-        fixture.returnsData("\"greetings\":[]");
+        fixture.returnsData("'greetings':[]");
         ListOfOptionalGreetingApi api = fixture.builder().build(ListOfOptionalGreetingApi.class);
 
         List<Optional<Greeting>> greetings = api.greetings();
@@ -121,7 +121,7 @@ public class OptionalBehavior {
     }
 
     @Test void shouldCallOptionalOptionalStringQuery() {
-        fixture.returnsData("\"greeting\":\"hi\"");
+        fixture.returnsData("'greeting':'hi'");
         OptionalOptionalStringApi api = fixture.builder().build(OptionalOptionalStringApi.class);
 
         Optional<Optional<String>> greeting = api.greeting();

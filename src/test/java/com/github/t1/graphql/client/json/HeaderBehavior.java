@@ -18,7 +18,7 @@ class HeaderBehavior {
 
     @Test void shouldAddCustomHeader() {
         Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
-        fixture.returnsData("\"greeting\":\"dummy-greeting\"");
+        fixture.returnsData("'greeting':'dummy-greeting'");
         StringApi api = fixture.builder()
             .header("H1", "V1")
             .header(new GraphQlClientHeader("H2", "V2"))

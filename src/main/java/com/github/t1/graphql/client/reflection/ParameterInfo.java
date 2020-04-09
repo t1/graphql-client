@@ -11,6 +11,7 @@ import java.lang.reflect.Parameter;
 public class ParameterInfo {
     private final MethodInfo method;
     private final Parameter parameter;
+    @Getter private final TypeInfo type;
     @Getter private final Object value;
 
     @Override public String toString() { return "parameter '" + parameter.getName() + "' in " + method; }

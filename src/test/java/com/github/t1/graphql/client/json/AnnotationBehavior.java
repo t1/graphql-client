@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class AnnotationBehavior {
+class AnnotationBehavior {
     private final GraphQlClientFixture fixture = new GraphQlClientFixture();
 
     interface RenamedStringApi {
@@ -17,7 +17,7 @@ public class AnnotationBehavior {
     }
 
     @Test void shouldCallRenamedStringQuery() {
-        fixture.returnsData("\"greeting\":\"dummy-greeting\"");
+        fixture.returnsData("'greeting':'dummy-greeting'");
         RenamedStringApi api = fixture.builder().build(RenamedStringApi.class);
 
         String greeting = api.foo();
@@ -32,12 +32,12 @@ public class AnnotationBehavior {
     }
 
     @Test void shouldCallParamQuery() {
-        fixture.returnsData("\"greeting\":\"hi, foo\"");
+        fixture.returnsData("'greeting':'hi, foo'");
         RenamedParamApi api = fixture.builder().build(RenamedParamApi.class);
 
         String greeting = api.greeting("foo");
 
-        then(fixture.query()).isEqualTo("greeting(who: \\\"foo\\\")");
+        then(fixture.query()).isEqualTo("greeting(who: 'foo')");
         then(greeting).isEqualTo("hi, foo");
     }
 
@@ -46,13 +46,13 @@ public class AnnotationBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class Greeting {
+    @Data static class Greeting {
         @Name("foo") String text;
         @Name("key") int code;
     }
 
     @Test void shouldCallObjectQuery() {
-        fixture.returnsData("\"greeting\":{\"foo\":\"foo\",\"key\":5}");
+        fixture.returnsData("'greeting':{'foo':'foo','key':5}");
         ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         Greeting greeting = api.greeting();

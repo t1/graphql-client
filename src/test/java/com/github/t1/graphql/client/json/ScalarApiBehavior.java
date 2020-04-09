@@ -28,7 +28,7 @@ class ScalarApiBehavior {
 
     @Nested class BooleanBehavior {
         @Test void shouldCallBoolQuery() {
-            fixture.returnsData("\"bool\":true");
+            fixture.returnsData("'bool':true");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             boolean bool = api.bool();
@@ -38,7 +38,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailToAssignNullToBool() {
-            fixture.returnsData("\"bool\":null");
+            fixture.returnsData("'bool':null");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
@@ -47,7 +47,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailToAssignStringToBool() {
-            fixture.returnsData("\"bool\":\"xxx\"");
+            fixture.returnsData("'bool':'xxx'");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
@@ -56,7 +56,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailToAssignNumberToBool() {
-            fixture.returnsData("\"bool\":123");
+            fixture.returnsData("'bool':123");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
@@ -65,7 +65,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailToAssignListToBool() {
-            fixture.returnsData("\"bool\":[123]");
+            fixture.returnsData("'bool':[123]");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
@@ -74,7 +74,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailToAssignObjectToBool() {
-            fixture.returnsData("\"bool\":{\"foo\":\"bar\"}");
+            fixture.returnsData("'bool':{'foo':'bar'}");
             BoolApi api = fixture.builder().build(BoolApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::bool, GraphQlClientException.class);
@@ -84,7 +84,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallBooleanQuery() {
-            fixture.returnsData("\"bool\":true");
+            fixture.returnsData("'bool':true");
             BooleanApi api = fixture.builder().build(BooleanApi.class);
 
             Boolean bool = api.bool();
@@ -105,7 +105,7 @@ class ScalarApiBehavior {
 
     @Nested class ByteBehavior {
         @Test void shouldCallByteQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             ByteApi api = fixture.builder().build(ByteApi.class);
 
             Byte code = api.code();
@@ -116,7 +116,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveByteQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             PrimitiveByteApi api = fixture.builder().build(PrimitiveByteApi.class);
 
             byte code = api.code();
@@ -127,7 +127,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailByteFromTooBigNumberQuery() {
             int tooBig = (int) Byte.MAX_VALUE + 1;
-            fixture.returnsData("\"code\":" + tooBig);
+            fixture.returnsData("'code':" + tooBig);
             ByteApi api = fixture.builder().build(ByteApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -137,7 +137,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailByteFromNegativeNumberQuery() {
             int tooSmall = (int) Byte.MIN_VALUE - 1;
-            fixture.returnsData("\"code\":" + tooSmall);
+            fixture.returnsData("'code':" + tooSmall);
             ByteApi api = fixture.builder().build(ByteApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -157,7 +157,7 @@ class ScalarApiBehavior {
 
     @Nested class CharacterBehavior {
         @Test void shouldCallCharacterFromStringQuery() {
-            fixture.returnsData("\"code\":\"a\"");
+            fixture.returnsData("'code':'a'");
             CharacterApi api = fixture.builder().build(CharacterApi.class);
 
             Character c = api.code();
@@ -167,7 +167,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailCharacterFromStringQueryWithMoreThanOneCharacter() {
-            fixture.returnsData("\"code\":\"ab\"");
+            fixture.returnsData("'code':'ab'");
             CharacterApi api = fixture.builder().build(CharacterApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -176,7 +176,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldCallCharacterFromNumberQuery() {
-            fixture.returnsData("\"code\":97");
+            fixture.returnsData("'code':97");
             CharacterApi api = fixture.builder().build(CharacterApi.class);
 
             Character c = api.code();
@@ -187,7 +187,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailCharacterFromTooBigNumberQuery() {
             int tooBig = (int) Character.MAX_VALUE + 1;
-            fixture.returnsData("\"code\":" + tooBig);
+            fixture.returnsData("'code':" + tooBig);
             CharacterApi api = fixture.builder().build(CharacterApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -196,7 +196,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailCharacterFromNegativeNumberQuery() {
-            fixture.returnsData("\"code\":-15");
+            fixture.returnsData("'code':-15");
             CharacterApi api = fixture.builder().build(CharacterApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -206,7 +206,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveCharQuery() {
-            fixture.returnsData("\"code\":\"a\"");
+            fixture.returnsData("'code':'a'");
             PrimitiveCharApi api = fixture.builder().build(PrimitiveCharApi.class);
 
             char c = api.code();
@@ -216,7 +216,7 @@ class ScalarApiBehavior {
         }
 
         @Test void shouldFailPrimitiveCharQueryWithMoreThanOneCharacter() {
-            fixture.returnsData("\"code\":\"ab\"");
+            fixture.returnsData("'code':'ab'");
             PrimitiveCharApi api = fixture.builder().build(PrimitiveCharApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -236,7 +236,7 @@ class ScalarApiBehavior {
 
     @Nested class ShortBehavior {
         @Test void shouldCallShortQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             ShortApi api = fixture.builder().build(ShortApi.class);
 
             Short code = api.code();
@@ -247,7 +247,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooSmallShortQuery() {
             int tooSmall = (int) Short.MIN_VALUE - 1;
-            fixture.returnsData("\"code\":" + tooSmall);
+            fixture.returnsData("'code':" + tooSmall);
             ShortApi api = fixture.builder().build(ShortApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -257,7 +257,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooBigShortQuery() {
             int tooBig = (int) Short.MAX_VALUE + 1;
-            fixture.returnsData("\"code\":" + tooBig);
+            fixture.returnsData("'code':" + tooBig);
             ShortApi api = fixture.builder().build(ShortApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -267,7 +267,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveShortQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             PrimitiveShortApi api = fixture.builder().build(PrimitiveShortApi.class);
 
             short code = api.code();
@@ -288,7 +288,7 @@ class ScalarApiBehavior {
 
     @Nested class IntegerBehavior {
         @Test void shouldCallIntegerQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             IntegerApi api = fixture.builder().build(IntegerApi.class);
 
             Integer code = api.code();
@@ -299,7 +299,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallDoubleQuery() {
             double number = 123.456d;
-            fixture.returnsData("\"code\":" + number);
+            fixture.returnsData("'code':" + number);
             IntegerApi api = fixture.builder().build(IntegerApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -309,7 +309,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooSmallIntegerQuery() {
             long tooSmall = (long) Integer.MIN_VALUE - 1;
-            fixture.returnsData("\"code\":" + tooSmall);
+            fixture.returnsData("'code':" + tooSmall);
             IntegerApi api = fixture.builder().build(IntegerApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -319,7 +319,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooBigIntegerQuery() {
             long tooBig = (long) Integer.MAX_VALUE + 1;
-            fixture.returnsData("\"code\":" + tooBig);
+            fixture.returnsData("'code':" + tooBig);
             IntegerApi api = fixture.builder().build(IntegerApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -329,7 +329,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallIntQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             IntApi api = fixture.builder().build(IntApi.class);
 
             int code = api.code();
@@ -350,7 +350,7 @@ class ScalarApiBehavior {
 
     @Nested class LongBehavior {
         @Test void shouldCallLongQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             LongApi api = fixture.builder().build(LongApi.class);
 
             Long code = api.code();
@@ -361,7 +361,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooSmallLongQuery() {
             String tooSmall = "-9223372036854775809";
-            fixture.returnsData("\"code\":" + tooSmall);
+            fixture.returnsData("'code':" + tooSmall);
             LongApi api = fixture.builder().build(LongApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -371,7 +371,7 @@ class ScalarApiBehavior {
 
         @Test void shouldFailToCallTooBigLongQuery() {
             String tooBig = "9223372036854775808";
-            fixture.returnsData("\"code\":" + tooBig);
+            fixture.returnsData("'code':" + tooBig);
             LongApi api = fixture.builder().build(LongApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::code, GraphQlClientException.class);
@@ -381,7 +381,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveLongQuery() {
-            fixture.returnsData("\"code\":5");
+            fixture.returnsData("'code':5");
             PrimitiveLongApi api = fixture.builder().build(PrimitiveLongApi.class);
 
             long code = api.code();
@@ -402,7 +402,7 @@ class ScalarApiBehavior {
 
     @Nested class FloatBehavior {
         @Test void shouldCallFloatQuery() {
-            fixture.returnsData("\"number\":123.456");
+            fixture.returnsData("'number':123.456");
             FloatApi api = fixture.builder().build(FloatApi.class);
 
             Float number = api.number();
@@ -413,7 +413,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveFloatQuery() {
-            fixture.returnsData("\"number\":123.456");
+            fixture.returnsData("'number':123.456");
             PrimitiveFloatApi api = fixture.builder().build(PrimitiveFloatApi.class);
 
             float number = api.number();
@@ -434,7 +434,7 @@ class ScalarApiBehavior {
 
     @Nested class DoubleBehavior {
         @Test void shouldCallDoubleQuery() {
-            fixture.returnsData("\"number\":123.456");
+            fixture.returnsData("'number':123.456");
             DoubleApi api = fixture.builder().build(DoubleApi.class);
 
             Double number = api.number();
@@ -445,7 +445,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallPrimitiveDoubleQuery() {
-            fixture.returnsData("\"number\":123.456");
+            fixture.returnsData("'number':123.456");
             PrimitiveDoubleApi api = fixture.builder().build(PrimitiveDoubleApi.class);
 
             double number = api.number();
@@ -463,7 +463,7 @@ class ScalarApiBehavior {
     @Nested class BigDecimalBehavior {
         @Test void shouldCallReallyLongDecimalQuery() {
             String reallyLongDecimal = "123.45678901234567890123456789012345678901234567890123456789012345678901234567890";
-            fixture.returnsData("\"number\":" + reallyLongDecimal);
+            fixture.returnsData("'number':" + reallyLongDecimal);
             BigDecimalApi api = fixture.builder().build(BigDecimalApi.class);
 
             BigDecimal number = api.number();
@@ -474,7 +474,7 @@ class ScalarApiBehavior {
 
         @Test void shouldCallNotSoLongDecimalQuery() {
             String notSoLongDecimal = "123.456";
-            fixture.returnsData("\"number\":\"" + notSoLongDecimal + "\"");
+            fixture.returnsData("'number':'" + notSoLongDecimal + "'");
             BigDecimalApi api = fixture.builder().build(BigDecimalApi.class);
 
             BigDecimal number = api.number();
@@ -539,7 +539,7 @@ class ScalarApiBehavior {
 
     @Nested class StringBehavior {
         @Test void shouldCallStringQuery() {
-            fixture.returnsData("\"greeting\":\"dummy-greeting\"");
+            fixture.returnsData("'greeting':'dummy-greeting'");
             StringApi api = fixture.builder().build(StringApi.class);
 
             String greeting = api.greeting();
@@ -565,7 +565,7 @@ class ScalarApiBehavior {
             GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
 
             then(thrown).hasMessage("errors from service: [{\"message\":\"failed\"}]:\n" +
-                "  {\"query\":\"{ greeting }\"}");
+                "  {\"query\":\"query { greeting }\"}");
         }
 
         @Test void shouldFailOnMissingQueryResponse() {
@@ -579,7 +579,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallScalarWithValueOfQuery() {
-            fixture.returnsData("\"foo\":123456");
+            fixture.returnsData("'foo':123456");
             ScalarWithValueOfApi api = fixture.builder().build(ScalarWithValueOfApi.class);
 
             Integer value = api.foo();
@@ -591,7 +591,7 @@ class ScalarApiBehavior {
 
         @Test void shouldCallScalarWithParseQuery() {
             LocalDate now = LocalDate.now();
-            fixture.returnsData("\"now\":\"" + now + "\"");
+            fixture.returnsData("'now':'" + now + "'");
             ScalarWithParseApi api = fixture.builder().build(ScalarWithParseApi.class);
 
             LocalDate value = api.now();
@@ -603,7 +603,7 @@ class ScalarApiBehavior {
 
         @Test void shouldCallNotSoBigIntegerScalarWithStringConstructorApiQuery() {
             String bigNumber = "1234";
-            fixture.returnsData("\"foo\":" + bigNumber);
+            fixture.returnsData("'foo':" + bigNumber);
             ScalarWithStringConstructorApi api = fixture.builder().build(ScalarWithStringConstructorApi.class);
 
             BigInteger value = api.foo();
@@ -614,7 +614,7 @@ class ScalarApiBehavior {
 
         @Test void shouldCallVeryBigIntegerScalarWithStringConstructorApiQuery() {
             String bigNumber = "1234567890123456789012345678901234567890123456789012345678901234567890";
-            fixture.returnsData("\"foo\":" + bigNumber);
+            fixture.returnsData("'foo':" + bigNumber);
             ScalarWithStringConstructorApi api = fixture.builder().build(ScalarWithStringConstructorApi.class);
 
             BigInteger value = api.foo();
@@ -625,7 +625,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldFailToCreateFailingScalar() {
-            fixture.returnsData("\"foo\":\"a\"");
+            fixture.returnsData("'foo':'a'");
             FailingScalarApi api = fixture.builder().build(FailingScalarApi.class);
 
             GraphQlClientException thrown = catchThrowableOfType(api::foo, GraphQlClientException.class);
@@ -636,7 +636,7 @@ class ScalarApiBehavior {
 
 
         @Test void shouldCallScalarWithStringConstructorMethodQuery() {
-            fixture.returnsData("\"foo\":\"bar\"");
+            fixture.returnsData("'foo':'bar'");
             ScalarWithStringConstructorMethodApi api = fixture.builder().build(ScalarWithStringConstructorMethodApi.class);
 
             ScalarWithStringConstructorMethod value = api.foo();

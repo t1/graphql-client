@@ -66,4 +66,6 @@ public class CollectionUtils {
             @Override public Set<Characteristics> characteristics() { return emptySet(); }
         };
     }
+
+    public static boolean nonEmpty(String name) { return !name.isEmpty(); }
 }

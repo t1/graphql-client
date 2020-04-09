@@ -26,7 +26,7 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringSetQuery() {
-        fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        fixture.returnsData("'greetings':['a','b']");
         StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         Set<String> greetings = api.greetings();
@@ -36,7 +36,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignStringToSet() {
-        fixture.returnsData("\"greetings\":\"a\"");
+        fixture.returnsData("'greetings':'a'");
         StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -45,7 +45,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignNumberToSet() {
-        fixture.returnsData("\"greetings\":12345");
+        fixture.returnsData("'greetings':12345");
         StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -54,7 +54,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignBooleanToSet() {
-        fixture.returnsData("\"greetings\":true");
+        fixture.returnsData("'greetings':true");
         StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -63,7 +63,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignObjectToSet() {
-        fixture.returnsData("\"greetings\":{\"foo\":\"bar\"}");
+        fixture.returnsData("'greetings':{'foo':'bar'}");
         StringSetApi api = fixture.builder().build(StringSetApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -77,7 +77,7 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringListQuery() {
-        fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        fixture.returnsData("'greetings':['a','b']");
         StringListApi api = fixture.builder().build(StringListApi.class);
 
         List<String> greetings = api.greetings();
@@ -87,7 +87,7 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringListQueryWithNull() {
-        fixture.returnsData("\"greetings\":[\"a\",null]");
+        fixture.returnsData("'greetings':['a',null]");
         StringListApi api = fixture.builder().build(StringListApi.class);
 
         List<String> greetings = api.greetings();
@@ -103,7 +103,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToCallNonNullStringListQuery() {
-        fixture.returnsData("\"greetings\":[\"a\",null]");
+        fixture.returnsData("'greetings':['a',null]");
         NonNullStringListApi api = fixture.builder().build(NonNullStringListApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -117,7 +117,7 @@ class NestedBehavior {
     }
 
     @Test void shouldCallStringArrayQuery() {
-        fixture.returnsData("\"greetings\":[\"a\",\"b\"]");
+        fixture.returnsData("'greetings':['a','b']");
         StringArrayApi api = fixture.builder().build(StringArrayApi.class);
 
         String[] greetings = api.greetings();
@@ -132,13 +132,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class Greeting {
+    @Data static class Greeting {
         String text;
         int code;
     }
 
     @Test void shouldCallObjectQuery() {
-        fixture.returnsData("\"greeting\":{\"text\":\"foo\",\"code\":5}");
+        fixture.returnsData("'greeting':{'text':'foo','code':5}");
         ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         Greeting greeting = api.greeting();
@@ -148,7 +148,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignStringToObject() {
-        fixture.returnsData("\"greeting\":\"a\"");
+        fixture.returnsData("'greeting':'a'");
         ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
@@ -157,7 +157,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignNumberToObject() {
-        fixture.returnsData("\"greeting\":12.34");
+        fixture.returnsData("'greeting':12.34");
         ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
@@ -166,7 +166,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignBooleanToObject() {
-        fixture.returnsData("\"greeting\":false");
+        fixture.returnsData("'greeting':false");
         ObjectApi api = fixture.builder().build(ObjectApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greeting, GraphQlClientException.class);
@@ -180,7 +180,7 @@ class NestedBehavior {
     }
 
     @Test void shouldCallObjectListQuery() {
-        fixture.returnsData("\"greetings\":[{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}]");
+        fixture.returnsData("'greetings':[{'text':'a','code':1},{'text':'b','code':2}]");
         ObjectListApi api = fixture.builder().build(ObjectListApi.class);
 
         List<Greeting> greeting = api.greetings();
@@ -192,7 +192,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignStringToObjectListQuery() {
-        fixture.returnsData("\"greetings\":[{\"text\":\"a\",\"code\":1},123456]");
+        fixture.returnsData("'greetings':[{'text':'a','code':1},123456]");
         ObjectListApi api = fixture.builder().build(ObjectListApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -201,7 +201,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToAssignNumberToObjectListQuery() {
-        fixture.returnsData("\"greetings\":[123,456.78]");
+        fixture.returnsData("'greetings':[123,456.78]");
         ObjectListApi api = fixture.builder().build(ObjectListApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::greetings, GraphQlClientException.class);
@@ -215,13 +215,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class StringContainer {
+    @Data static class StringContainer {
         String greeting;
         int count;
     }
 
     @Test void shouldCallNestedStringQuery() {
-        fixture.returnsData("\"container\":{\"greeting\":\"hi\",\"count\":5}");
+        fixture.returnsData("'container':{'greeting':'hi','count':5}");
         StringContainerApi api = fixture.builder().build(StringContainerApi.class);
 
         StringContainer container = api.container();
@@ -236,18 +236,18 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class GreetingContainer {
+    @Data static class GreetingContainer {
         Greeting greeting;
         int count;
     }
 
     @Test void shouldCallNestedObjectQuery() {
-        fixture.returnsData("\"container\":{\"greeting\":{\"text\":\"a\",\"code\":1},\"count\":3}");
+        fixture.returnsData("'container':{'greeting':{'text':'a','code':1},'count':3}");
         GreetingContainerApi api = fixture.builder().build(GreetingContainerApi.class);
 
         GreetingContainer container = api.container();
 
-        then(fixture.query()).isEqualTo("container {greeting{text code} count}");
+        then(fixture.query()).isEqualTo("container {greeting {text code} count}");
         then(container).isEqualTo(new GreetingContainer(
             new Greeting("a", 1), 3));
     }
@@ -258,20 +258,20 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class GreetingsContainer {
+    @Data static class GreetingsContainer {
         List<Greeting> greetings;
         int count;
     }
 
     @Test void shouldCallNestedListQuery() {
-        fixture.returnsData("\"container\":{\"greetings\":[" +
-            "{\"text\":\"a\",\"code\":1},{\"text\":\"b\",\"code\":2}" +
-            "],\"count\":3}");
+        fixture.returnsData("'container':{'greetings':[" +
+            "{'text':'a','code':1},{'text':'b','code':2}" +
+            "],'count':3}");
         GreetingsContainerApi api = fixture.builder().build(GreetingsContainerApi.class);
 
         GreetingsContainer container = api.container();
 
-        then(fixture.query()).isEqualTo("container {greetings{text code} count}");
+        then(fixture.query()).isEqualTo("container {greetings {text code} count}");
         then(container).isEqualTo(new GreetingsContainer(
             asList(new Greeting("a", 1), new Greeting("b", 2)), 3));
     }
@@ -282,25 +282,25 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class WrappedGreetingContainer {
+    @Data static class WrappedGreetingContainer {
         Wrapper<Greeting> greeting;
         int count;
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class Wrapper<T> {
+    @Data static class Wrapper<T> {
         private T value;
     }
 
     @Test void shouldCallWrappedGreetingQuery() {
-        fixture.returnsData("\"container\":{\"greeting\":{" +
-            "\"value\":{\"text\":\"a\",\"code\":1}}," +
-            "\"count\":3}");
+        fixture.returnsData("'container':{'greeting':{" +
+            "'value':{'text':'a','code':1}}," +
+            "'count':3}");
         WrappedGreetingApi api = fixture.builder().build(WrappedGreetingApi.class);
 
         WrappedGreetingContainer container = api.container();
 
-        then(fixture.query()).isEqualTo("container {greeting{value{text code}} count}");
+        then(fixture.query()).isEqualTo("container {greeting {value {text code}} count}");
         then(container).isEqualTo(new WrappedGreetingContainer(
             new Wrapper<>(new Greeting("a", 1)), 3));
     }
@@ -311,24 +311,24 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class WrappedByteContainer {
+    @Data static class WrappedByteContainer {
         Wrapper<Byte> code;
         int count;
     }
 
     @Test void shouldCallWrappedByteQuery() {
-        fixture.returnsData("\"container\":{\"code\":{\"value\":123},\"count\":3}");
+        fixture.returnsData("'container':{'code':{'value':123},'count':3}");
         WrappedByteApi api = fixture.builder().build(WrappedByteApi.class);
 
         WrappedByteContainer container = api.container();
 
-        then(fixture.query()).isEqualTo("container {code{value} count}");
+        then(fixture.query()).isEqualTo("container {code {value} count}");
         then(container).isEqualTo(new WrappedByteContainer(
             new Wrapper<>((byte) 123), 3));
     }
 
     @Test void shouldFailToCallWrappedInvalidByteQuery() {
-        fixture.returnsData("\"container\":{\"code\":{\"value\":1000},\"count\":3}");
+        fixture.returnsData("'container':{'code':{'value':1000},'count':3}");
         WrappedByteApi api = fixture.builder().build(WrappedByteApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::container, GraphQlClientException.class);
@@ -342,13 +342,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class WrappedListByteContainer {
+    @Data static class WrappedListByteContainer {
         List<Byte> codes;
         int count;
     }
 
     @Test void shouldCallWrappedListByteQuery() {
-        fixture.returnsData("\"container\":{\"codes\":[97,98,99],\"count\":3}");
+        fixture.returnsData("'container':{'codes':[97,98,99],'count':3}");
         WrappedListByteApi api = fixture.builder().build(WrappedListByteApi.class);
 
         WrappedListByteContainer container = api.container();
@@ -359,7 +359,7 @@ class NestedBehavior {
     }
 
     @Test void shouldFailToCallWrappedInvalidListByteQuery() {
-        fixture.returnsData("\"container\":{\"codes\":[97,98,9999],\"count\":3}");
+        fixture.returnsData("'container':{'codes':[97,98,9999],'count':3}");
         WrappedListByteApi api = fixture.builder().build(WrappedListByteApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::container, GraphQlClientException.class);
@@ -374,7 +374,7 @@ class NestedBehavior {
 
     @SuppressWarnings({"unused"})
     @NoArgsConstructor @ToString @EqualsAndHashCode
-    public static class ClassWithTransientAndStaticFields {
+    static class ClassWithTransientAndStaticFields {
         public static final String TO_BE_IGNORED = "foo";
         private static final String ALSO_TO_BE_IGNORED = "bar";
         private transient boolean ignoreMe;
@@ -382,14 +382,14 @@ class NestedBehavior {
         String text;
         int code;
 
-        public ClassWithTransientAndStaticFields(String text, int code) {
+        ClassWithTransientAndStaticFields(String text, int code) {
             this.text = text;
             this.code = code;
         }
     }
 
     @Test void shouldCallObjectQueryWithSpecialFields() {
-        fixture.returnsData("\"foo\":{\"text\":\"foo\",\"code\":5,\"ignoreMe\":true}");
+        fixture.returnsData("'foo':{'text':'foo','code':5,'ignoreMe':true}");
         ClassWithTransientAndStaticFieldsApi api = fixture.builder().build(ClassWithTransientAndStaticFieldsApi.class);
 
         ClassWithTransientAndStaticFields foo = api.foo();
@@ -405,10 +405,10 @@ class NestedBehavior {
     }
 
     @EqualsAndHashCode(callSuper = true) @NoArgsConstructor(access = PRIVATE)
-    @Data public static class Sub extends Super {
+    @Data static class Sub extends Super {
         int count;
 
-        public Sub(Greeting greeting, int count) {
+        Sub(Greeting greeting, int count) {
             super(greeting);
             this.count = count;
         }
@@ -417,19 +417,19 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(access = PRIVATE)
-    @Data public static class Super {
+    @Data static class Super {
         Greeting greeting;
     }
 
     @Test void shouldCallInheritedGreetingQuery() {
-        fixture.returnsData("\"call\":{" +
-            "\"greeting\":{\"text\":\"a\",\"code\":1}," +
-            "\"count\":3}");
+        fixture.returnsData("'call':{" +
+            "'greeting':{'text':'a','code':1}," +
+            "'count':3}");
         InheritedGreetingApi api = fixture.builder().build(InheritedGreetingApi.class);
 
         Sub sub = api.call();
 
-        then(fixture.query()).isEqualTo("call {greeting{text code} count}");
+        then(fixture.query()).isEqualTo("call {greeting {text code} count}");
         then(sub).isEqualTo(new Sub(new Greeting("a", 1), 3));
     }
 
@@ -439,12 +439,12 @@ class NestedBehavior {
     }
 
     @NoArgsConstructor(force = true, access = PRIVATE)
-    @Data public static class ObjectPrivateDefaultConstructor {
+    @Data static class ObjectPrivateDefaultConstructor {
         private final String foo;
     }
 
     @Test void shouldFailToCreateObjectPrivateDefaultConstructor() {
-        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        fixture.returnsData("'call':{'foo':'a'}");
         ObjectPrivateDefaultConstructorApi api = fixture.builder().build(ObjectPrivateDefaultConstructorApi.class);
 
         ObjectPrivateDefaultConstructor call = api.call();
@@ -459,13 +459,13 @@ class NestedBehavior {
     }
 
     @RequiredArgsConstructor
-    @Data public static class ObjectWithoutDefaultConstructor {
+    @Data static class ObjectWithoutDefaultConstructor {
         private final String foo;
         private final String bar;
     }
 
     @Test void shouldFailToCreateObjectWithoutDefaultConstructor() {
-        fixture.returnsData("\"call\":{\"foo\":\"a\",\"bar\":\"b\"}");
+        fixture.returnsData("'call':{'foo':'a','bar':'b'}");
         ObjectWithoutDefaultConstructorApi api = fixture.builder().build(ObjectWithoutDefaultConstructorApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);
@@ -480,13 +480,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class MissingNullableField {
+    @Data static class MissingNullableField {
         @NonNull String foo;
         String bar;
     }
 
     @Test void shouldCallWithMissingNullableField() {
-        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        fixture.returnsData("'call':{'foo':'a'}");
         MissingNullableFieldApi api = fixture.builder().build(MissingNullableFieldApi.class);
 
         MissingNullableField result = api.call();
@@ -502,13 +502,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class MissingNonNullField {
+    @Data static class MissingNonNullField {
         String foo;
         @NonNull String bar;
     }
 
     @Test void shouldFailToSetMissingNonNullField() {
-        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        fixture.returnsData("'call':{'foo':'a'}");
         MissingNonNullFieldApi api = fixture.builder().build(MissingNonNullFieldApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);
@@ -523,13 +523,13 @@ class NestedBehavior {
     }
 
     @AllArgsConstructor @NoArgsConstructor(force = true)
-    @Data public static class MissingPrimitiveField {
+    @Data static class MissingPrimitiveField {
         String foo;
         boolean bar;
     }
 
     @Test void shouldFailToSetMissingPrimitiveField() {
-        fixture.returnsData("\"call\":{\"foo\":\"a\"}");
+        fixture.returnsData("'call':{'foo':'a'}");
         MissingPrimitiveFieldApi api = fixture.builder().build(MissingPrimitiveFieldApi.class);
 
         GraphQlClientException thrown = catchThrowableOfType(api::call, GraphQlClientException.class);

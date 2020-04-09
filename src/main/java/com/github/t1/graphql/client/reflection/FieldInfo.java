@@ -26,6 +26,16 @@ public class FieldInfo {
         return field.getName();
     }
 
+    public Object get(Object instance) {
+        try {
+            field.setAccessible(true);
+            return field.get(instance);
+        } catch (ReflectiveOperationException e) {
+            // this code is unreachable: setAccessible also allows to change `final` fields
+            throw new GraphQlClientException("can't get field " + this, e);
+        }
+    }
+
     public void set(Object instance, Object value) {
         try {
             field.setAccessible(true);

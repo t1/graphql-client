@@ -86,7 +86,7 @@ public class TypeInfo {
     public Stream<FieldInfo> fields() { return fields(getRawType()); }
 
     private Stream<FieldInfo> fields(Class<?> rawType) {
-        return (rawType == Object.class) ? Stream.of() :
+        return (rawType == null) ? Stream.of() :
             Stream.concat(
                 fields(rawType.getSuperclass()),
                 Stream.of(rawType.getDeclaredFields())
