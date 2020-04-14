@@ -537,6 +537,20 @@ class ScalarApiBehavior {
         String text;
     }
 
+    interface ScalarWithOfConstructorMethodApi {
+        ScalarWithOfConstructorMethod foo();
+    }
+
+    public static class ScalarWithOfConstructorMethod {
+        public static ScalarWithOfConstructorMethod of(String text) {
+            ScalarWithOfConstructorMethod result = new ScalarWithOfConstructorMethod();
+            result.text = text;
+            return result;
+        }
+
+        String text;
+    }
+
     @Nested class StringBehavior {
         @Test void shouldCallStringQuery() {
             fixture.returnsData("'greeting':'dummy-greeting'");
@@ -640,6 +654,17 @@ class ScalarApiBehavior {
             ScalarWithStringConstructorMethodApi api = fixture.builder().build(ScalarWithStringConstructorMethodApi.class);
 
             ScalarWithStringConstructorMethod value = api.foo();
+
+            then(fixture.query()).isEqualTo("foo");
+            then(value.text).isEqualTo("bar");
+        }
+
+
+        @Test void shouldCallScalarWithOfConstructorMethodQuery() {
+            fixture.returnsData("'foo':'bar'");
+            ScalarWithOfConstructorMethodApi api = fixture.builder().build(ScalarWithOfConstructorMethodApi.class);
+
+            ScalarWithOfConstructorMethod value = api.foo();
 
             then(fixture.query()).isEqualTo("foo");
             then(value.text).isEqualTo("bar");

@@ -121,8 +121,8 @@ public class TypeInfo {
 
     public Optional<ConstructingInfo> scalarConstructor() {
         return Stream.concat(
-            Stream.of(getRawType().getConstructors()).filter(this::hasOneStringParameter),
-            Stream.of(getRawType().getMethods()).filter(this::isStaticStringConstructor)
+            Stream.of(getRawType().getMethods()).filter(this::isStaticStringConstructor),
+            Stream.of(getRawType().getConstructors()).filter(this::hasOneStringParameter)
         )
             .findFirst()
             .map(ConstructingInfo::new);
@@ -133,8 +133,9 @@ public class TypeInfo {
     }
 
     private boolean isStaticStringConstructor(Method method) {
-        return isStaticConstructorMethodNamed(method, "parse")
-            || isStaticConstructorMethodNamed(method, "valueOf");
+        return isStaticConstructorMethodNamed(method, "of")
+            || isStaticConstructorMethodNamed(method, "valueOf")
+            || isStaticConstructorMethodNamed(method, "parse");
     }
 
     private boolean isStaticConstructorMethodNamed(Method method, String name) {
