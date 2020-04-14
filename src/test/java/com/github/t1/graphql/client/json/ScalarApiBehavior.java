@@ -1,6 +1,7 @@
 package com.github.t1.graphql.client.json;
 
 import com.github.t1.graphql.client.api.GraphQlClientException;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -541,11 +542,11 @@ class ScalarApiBehavior {
         ScalarWithOfConstructorMethod foo();
     }
 
+    @AllArgsConstructor
     public static class ScalarWithOfConstructorMethod {
+        @SuppressWarnings("unused")
         public static ScalarWithOfConstructorMethod of(String text) {
-            ScalarWithOfConstructorMethod result = new ScalarWithOfConstructorMethod();
-            result.text = text;
-            return result;
+            return new ScalarWithOfConstructorMethod("x-" + text);
         }
 
         String text;
@@ -667,7 +668,7 @@ class ScalarApiBehavior {
             ScalarWithOfConstructorMethod value = api.foo();
 
             then(fixture.query()).isEqualTo("foo");
-            then(value.text).isEqualTo("bar");
+            then(value.text).isEqualTo("x-bar");
         }
     }
 }
