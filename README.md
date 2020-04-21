@@ -2,6 +2,8 @@
 
 # graphql-client
 
+THIS PROJECT HAS MOVED TO [SMALLRYE-GRAPHQL](https://github.com/smallrye/smallrye-graphql)!
+
 A Java code first GraphQL Client API suggestion for [Microprofile GraphQL](https://github.com/eclipse/microprofile-graphql/issues/185).
 
 Usage:
